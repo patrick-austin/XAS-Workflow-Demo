@@ -1,0 +1,87 @@
+<tool id="larch_artemis" name="Larch Artemis" version="@TOOL_VERSION@+galaxy@WRAPPER_VERSION@" python_template_version="3.5" profile="22.05" license="MIT">
+    <description>generate Artemis projects from XAFS data</description>
+    <macros>
+        <!-- version of underlying tool (PEP 440) -->
+        <token name="@TOOL_VERSION@">0.9.66</token>
+        <!-- version of this tool wrapper (integer) -->
+        <token name="@WRAPPER_VERSION@">0</token>
+        <!-- citation should be updated with every underlying tool version -->
+        <!-- typical fields to update are version, month, year, and doi -->
+        <token name="@TOOL_CITATION@">10.1088/1742-6596/430/1/012007</token>
+    </macros>
+    <creator>
+        <person givenName="Patrick" familyName="Austin" url="https://github.com/patrick-austin"/>
+        <organization url="https://muon-spectroscopy-computational-project.github.io/index.html" name="The Muon Spectroscopy Computational Project"/>
+    </creator>
+    <requirements>
+        <requirement type="package" version="@TOOL_VERSION@">xraylarch</requirement>
+        <requirement type="package" version="3.5.1">matplotlib</requirement>
+    </requirements>
+    <required_files>
+        <include type="glob" path="lib/*.py"/>
+        <include type="literal" path="larch_artemis.py"/>
+    </required_files>
+    <command detect_errors="exit_code"><![CDATA[
+        python '${__tool_directory__}/larch_artemis.py' '$prj_file' '$structure_file' '$gds_file' '$sp_file' '$inputs'
+    ]]></command>
+    <configfiles>
+        <inputs name="inputs"/>
+    </configfiles>
+    <inputs>
+        <param name="prj_file" type="data" format="binary" label="Athena project file" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format."/>
+        <param name="structure_file" type="data" format="cif, txt" multiple="true" label="Crystal structure file" help="One or more crystal structure files to be used for fitting, in CIF format."/>
+        <param name="gds_file" type="data" format="csv" label="GDS parameters file" help="File defining the fitting parameters as a `guess` (to be varied in the fit), `def` (defined by an expression evaluated throughout fitting) or `set` (evaluated at the start of fitting, then left unchanged)."/>
+        <param name="sp_file" type="data" format="csv" label="SP parameters file" help="File defining the scattering paths."/>
+        <!-- TODO help text and sensible types, limits etc. -->
+        <section name="fit_vars" title="Fitting Variables">
+            <param argument="fitspace" type="text" value="r"/>
+            <param argument="kmin" type="integer" value="3"/>
+            <param argument="kmax" type="integer" value="14"/>
+            <param argument="kw" type="integer" value="2"/>
+            <param argument="dk" type="integer" value="1"/>
+            <param argument="window" type="text" value="hanning"/>
+            <param argument="rmin" type="float" value="1.4"/>
+            <param argument="rmax" type="float" value="3.0"/>
+        </section>
+        <param name="plot_graph" type="boolean" label="Plot graph" help="Whether to plot the data."/>
+    </inputs>
+    <outputs>
+        <data name="artemis_project_file" format="binary" from_work_dir="out.prj" label="Artemis project of ${prj_file.name}"/>
+        <data name="plot" format="png" from_work_dir="out.png" label="Plot of ${prj_file.name}">
+            <filter>plot_graph</filter>
+        </data>
+    </outputs>
+    <tests>
+        <!-- <test expect_num_outputs="1">
+            <param name="dat_file" value="test.xmu"/>
+            <output name="athena_project_file">
+                <assert_contents>
+                    <has_size value="14785" delta="20"/>
+                </assert_contents>
+            </output>
+        </test>
+        <test expect_num_outputs="2">
+            <param name="dat_file" value="test.xmu"/>
+            <param name="plot_graph" value="true"/>
+            <output name="athena_project_file">
+                <assert_contents>
+                    <has_size value="14785" delta="20"/>
+                </assert_contents>
+            </output>
+            <output name="plot">
+                <assert_contents>
+                    <has_size value="14785" delta="20"/>
+                </assert_contents>
+            </output>
+        </test> -->
+    </tests>
+    <help><![CDATA[
+        .. Using Larch, create an Athena project file from the input X-ray Absorption Fine Structure (XAFS) data file. This renames the `xmu` column of the data to `mu`.
+
+        .. Optionally, plot the xμ data along with pre and post edge fitting lines for visual inspection. 
+    ]]></help>
+    <citations>
+        <citation type="bibtex">@TOOL_CITATION@</citation>
+        <citation type="doi">10.1107/S0909049505012719</citation>
+    </citations>
+</tool>

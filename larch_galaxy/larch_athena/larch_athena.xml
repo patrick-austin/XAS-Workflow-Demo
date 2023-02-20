@@ -15,7 +15,7 @@
     </creator>
     <requirements>
         <requirement type="package" version="@TOOL_VERSION@">xraylarch</requirement>
-        <requirement type="package" version="3.5.1">matplotlib</requirement>
+        <requirement type="package" version="3.5.2">matplotlib</requirement>
     </requirements>
     <required_files>
         <include type="literal" path="larch_athena.py"/>
@@ -63,7 +63,7 @@
         Optionally, plot the xμ data along with pre and post edge fitting lines for visual inspection. 
     ]]></help>
     <citations>
-        <citation type="bibtex">@TOOL_CITATION@</citation>
+        <citation type="doi">@TOOL_CITATION@</citation>
         <citation type="doi">10.1107/S0909049505012719</citation>
     </citations>
 </tool>

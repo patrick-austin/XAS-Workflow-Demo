@@ -15,21 +15,30 @@
     </creator>
     <requirements>
         <requirement type="package" version="@TOOL_VERSION@">xraylarch</requirement>
-        <requirement type="package" version="3.5.1">matplotlib</requirement>
+        <requirement type="package" version="3.5.2">matplotlib</requirement>
+        <!-- TODO -->
+        <!-- <requirement type="package" version="0.7.0">ipysheet</requirement> -->
     </requirements>
     <required_files>
         <include type="glob" path="lib/*.py"/>
         <include type="literal" path="larch_artemis.py"/>
     </required_files>
     <command detect_errors="exit_code"><![CDATA[
-        python '${__tool_directory__}/larch_artemis.py' '$prj_file' '$structure_file' '$gds_file' '$sp_file' '$inputs'
+        structure_files_renamed=''
+        #for $structure_file in $structure_files
+        && ln -s '$structure_file' '$structure_file.name'
+        && structure_files_renamed+='$structure_file.name,'
+        && echo \$structure_files_renamed
+        #end for
+        && python '${__tool_directory__}/larch_artemis.py' '$prj_file' \$structure_files_renamed '$gds_file' '$sp_file' '$inputs'
     ]]></command>
     <configfiles>
         <inputs name="inputs"/>
     </configfiles>
     <inputs>
         <param name="prj_file" type="data" format="binary" label="Athena project file" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format."/>
-        <param name="structure_file" type="data" format="cif, txt" multiple="true" label="Crystal structure file" help="One or more crystal structure files to be used for fitting, in CIF format."/>
+        <!-- TODO sort out inp file types -->
+        <param name="structure_files" type="data" format="cif, txt" multiple="true" label="Crystal structure file" help="One or more crystal structure files to be used for fitting, in CIF format."/>
         <param name="gds_file" type="data" format="csv" label="GDS parameters file" help="File defining the fitting parameters as a `guess` (to be varied in the fit), `def` (defined by an expression evaluated throughout fitting) or `set` (evaluated at the start of fitting, then left unchanged)."/>
         <param name="sp_file" type="data" format="csv" label="SP parameters file" help="File defining the scattering paths."/>
         <!-- TODO help text and sensible types, limits etc. -->
@@ -46,42 +55,57 @@
         <param name="plot_graph" type="boolean" label="Plot graph" help="Whether to plot the data."/>
     </inputs>
     <outputs>
-        <data name="artemis_project_file" format="binary" from_work_dir="out.prj" label="Artemis project of ${prj_file.name}"/>
-        <data name="plot" format="png" from_work_dir="out.png" label="Plot of ${prj_file.name}">
+        <!-- TODO don't know how to actually generate this as an output... -->
+        <!-- <data name="artemis_project_file" format="binary" from_work_dir="out.fpj" label="Artemis project of ${prj_file.name}"/> -->
+        <data name="fit_report" format="txt" from_work_dir="report.txt" label="Fit report of ${prj_file.name}"/>
+        <data name="norm" format="png" from_work_dir="norm.png" label="Normalised plot of ${prj_file.name}">
+            <filter>plot_graph</filter>
+        </data>
+        <data name="rmr" format="png" from_work_dir="rmr.png" label="RMR plot of ${prj_file.name}">
+            <filter>plot_graph</filter>
+        </data>
+        <data name="chikr" format="png" from_work_dir="chikr.png" label="ChiKR plot of ${prj_file.name}">
             <filter>plot_graph</filter>
         </data>
     </outputs>
     <tests>
-        <!-- <test expect_num_outputs="1">
-            <param name="dat_file" value="test.xmu"/>
-            <output name="athena_project_file">
+        <test expect_num_outputs="1">
+            <param name="prj_file" value="test.prj"/>
+            <param name="structure_files" value="test.inp"/>
+            <param name="gds_file" value="gds.csv"/>
+            <param name="sp_file" value="sp.csv"/>
+            <output name="fit_report" file="fit_report.txt"/>
+        </test>
+        <test expect_num_outputs="4">
+            <param name="prj_file" value="test.prj"/>
+            <param name="structure_files" value="test.inp"/>
+            <param name="gds_file" value="gds.csv"/>
+            <param name="sp_file" value="sp.csv"/>
+            <output name="fit_report" file="fit_report.txt"/>
+            <output name="norm">
+                <assert_contents>
+                    <has_size value="14785" delta="20"/>
+                </assert_contents>
+            </output>
+            <output name="rmr">
+                <assert_contents>
+                    <has_size value="14785" delta="20"/>
+                </assert_contents>
+            </output>
+            <output name="chikr">
                 <assert_contents>
                     <has_size value="14785" delta="20"/>
                 </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="2">
-            <param name="dat_file" value="test.xmu"/>
-            <param name="plot_graph" value="true"/>
-            <output name="athena_project_file">
-                <assert_contents>
-                    <has_size value="14785" delta="20"/>
-                </assert_contents>
-            </output>
-            <output name="plot">
-                <assert_contents>
-                    <has_size value="14785" delta="20"/>
-                </assert_contents>
-            </output>
-        </test> -->
     </tests>
     <help><![CDATA[
-        .. Using Larch, create an Athena project file from the input X-ray Absorption Fine Structure (XAFS) data file. This renames the `xmu` column of the data to `mu`.
+        Using Larch, perform fitting on an Athena project file, originally from the input X-ray Absorption Fine Structure (XAFS) data file.
 
-        .. Optionally, plot the xμ data along with pre and post edge fitting lines for visual inspection. 
+        Optionally, plot the xμ data along with RMR and ChiKR plots for visual inspection of the fit. 
     ]]></help>
     <citations>
-        <citation type="bibtex">@TOOL_CITATION@</citation>
+        <citation type="doi">@TOOL_CITATION@</citation>
         <citation type="doi">10.1107/S0909049505012719</citation>
     </citations>
 </tool>

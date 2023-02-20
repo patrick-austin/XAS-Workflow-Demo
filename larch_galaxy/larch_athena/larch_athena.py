@@ -14,6 +14,7 @@ def rename_cols(xafs_group: Group):
     xafs_dict = group2dict(xafs_group)
     # add mu and energy to the dictionary
     xafs_dict["mu"] = mu_e
+    print(f"XAFS data keys: {xafs_dict.keys()}")
     xafs_group = dict2group(xafs_dict)
     return xafs_group
 

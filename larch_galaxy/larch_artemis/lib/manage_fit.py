@@ -1,7 +1,9 @@
 # set parameters 
 # example Using Larch with python3
 
-import larch_plugins as lp
+# TODO another one of the workflows does this?!
+# import larch_plugins as lp
+import larch as lp
 # library containign functions that read and write to csv files
 import lib.handle_csv as csvhandler
 # regular expression matching
@@ -232,7 +234,7 @@ def show_selected_paths(pats_sheet):
         ps_row += 1
     sp_sheet = ipysheet.sheet(rows=len(files)+1, columns=6)
     ipysheet.cell_range(sel_paths_data)
-    display(sp_sheet)
+    # display(sp_sheet)  # TODO
     return sp_sheet
 
 # use data frame to create selected paths list

@@ -5,6 +5,7 @@ from larch.symboltable import Group
 from larch.utils import group2dict, dict2group
 from larch.xafs import pre_edge
 
+import matplotlib
 import matplotlib.pyplot as plt
 
 
@@ -50,6 +51,9 @@ def main(dat_file: str, plot_graph: bool):
 
 
 if __name__ == "__main__":
+    # larch imports set this to an interactive backend, so need to change it
+    matplotlib.use("Agg")
+
     dat_file = sys.argv[1]
     plot_graph = sys.argv[2] == "true"
     main(dat_file, plot_graph)

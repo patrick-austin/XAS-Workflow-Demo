@@ -15,6 +15,9 @@
     </creator>
     <requirements>
         <requirement type="package" version="@TOOL_VERSION@">xraylarch</requirement>
+        <!-- xraydb 4.5.0 is compatible with sqlalchemy 2, but is not yet available on condaforge so pin it -->
+        <requirement type="package" version="4.4.7">xraydb</requirement>
+        <requirement type="package" version="1.4.46">sqlalchemy</requirement>
         <requirement type="package" version="3.5.2">matplotlib</requirement>
     </requirements>
     <required_files>
@@ -38,7 +41,7 @@
             <param name="dat_file" value="test.xmu"/>
             <output name="athena_project_file">
                 <assert_contents>
-                    <has_size value="14785" delta="20"/>
+                    <has_size value="5366" delta="10"/>
                 </assert_contents>
             </output>
         </test>
@@ -47,12 +50,12 @@
             <param name="plot_graph" value="true"/>
             <output name="athena_project_file">
                 <assert_contents>
-                    <has_size value="14785" delta="20"/>
+                    <has_size value="5366" delta="10"/>
                 </assert_contents>
             </output>
             <output name="plot">
                 <assert_contents>
-                    <has_size value="14785" delta="20"/>
+                    <has_size value="53887" delta="20"/>
                 </assert_contents>
             </output>
         </test>

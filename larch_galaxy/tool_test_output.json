@@ -1,0 +1,308 @@
+{
+    "summary": {
+        "num_errors": 0,
+        "num_failures": 0,
+        "num_skips": 0,
+        "num_tests": 2
+    },
+    "tests": [
+        {
+            "data": {
+                "inputs": {
+                    "gds_file": {
+                        "id": "2cfaca06df7f9b35",
+                        "src": "hda"
+                    },
+                    "prj_file": {
+                        "id": "ea3ba586403973b4",
+                        "src": "hda"
+                    },
+                    "sp_file": {
+                        "id": "4d1a5701915057c9",
+                        "src": "hda"
+                    },
+                    "structure_files": {
+                        "id": "4fe2a33f73bbe0f8",
+                        "src": "hda"
+                    }
+                },
+                "job": {
+                    "command_line": "structure_files_renamed='' && ln -s '/tmp/tmpft6ccv2g/files/2/9/c/dataset_29c73f96-bd21-4965-87f5-5e0c556fa11b.dat' 'test.inp' && structure_files_renamed+='test.inp,' && echo $structure_files_renamed && python '/home/kez92691/XAS-Workflow-Demo/larch_galaxy/larch_artemis/larch_artemis.py' '/tmp/tmpft6ccv2g/files/2/2/4/dataset_22409b1a-a257-4be3-9db9-24ff96a410cd.dat' $structure_files_renamed '/tmp/tmpft6ccv2g/files/e/d/4/dataset_ed4e917f-4785-4241-9bdd-942bf0d893d8.dat' '/tmp/tmpft6ccv2g/files/2/2/c/dataset_22cb8ca0-2989-4097-a90f-41f5d1f841a3.dat' '/tmp/tmpft6ccv2g/job_working_directory/000/5/configs/tmp6qrpd_a4'",
+                    "command_version": "",
+                    "create_time": "2023-02-21T15:24:34.464124",
+                    "dependencies": [],
+                    "exit_code": 0,
+                    "external_id": "27410",
+                    "galaxy_version": "22.05",
+                    "history_id": "ea3ba586403973b4",
+                    "id": "378eee0aab12d18e",
+                    "inputs": {
+                        "gds_file": {
+                            "id": "2cfaca06df7f9b35",
+                            "src": "hda",
+                            "uuid": "ed4e917f-4785-4241-9bdd-942bf0d893d8"
+                        },
+                        "prj_file": {
+                            "id": "ea3ba586403973b4",
+                            "src": "hda",
+                            "uuid": "22409b1a-a257-4be3-9db9-24ff96a410cd"
+                        },
+                        "sp_file": {
+                            "id": "4d1a5701915057c9",
+                            "src": "hda",
+                            "uuid": "22cb8ca0-2989-4097-a90f-41f5d1f841a3"
+                        },
+                        "structure_files": {
+                            "id": "4fe2a33f73bbe0f8",
+                            "src": "hda",
+                            "uuid": "29c73f96-bd21-4965-87f5-5e0c556fa11b"
+                        },
+                        "structure_files1": {
+                            "id": "4fe2a33f73bbe0f8",
+                            "src": "hda",
+                            "uuid": "29c73f96-bd21-4965-87f5-5e0c556fa11b"
+                        }
+                    },
+                    "job_messages": [],
+                    "job_metrics": [],
+                    "job_stderr": "",
+                    "job_stdout": "",
+                    "model_class": "Job",
+                    "output_collections": {},
+                    "outputs": {
+                        "fit_report": {
+                            "id": "378eee0aab12d18e",
+                            "src": "hda",
+                            "uuid": "00d13aef-ae3e-423e-b401-04ea025aea0a"
+                        }
+                    },
+                    "params": {
+                        "__input_ext": "\"input\"",
+                        "chromInfo": "\"/home/kez92691/muon-galaxy/tool-data/shared/ucsc/chrom/?.len\"",
+                        "dbkey": "\"?\"",
+                        "fit_vars": "{\"dk\": \"1\", \"fitspace\": \"r\", \"kmax\": \"14\", \"kmin\": \"3\", \"kw\": \"2\", \"rmax\": \"3.0\", \"rmin\": \"1.4\", \"window\": \"hanning\"}",
+                        "plot_graph": "\"false\""
+                    },
+                    "state": "ok",
+                    "stderr": "[matplotlib.font_manager] INFO : generated new fontManager\nException ignored in atexit callback: <function __wxmainloop__ at 0x7f1643729f30>\nTraceback (most recent call last):\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wxmplot/interactive.py\", line 68, in __wxmainloop__\n    get_wxapp().MainLoop()\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wxmplot/interactive.py\", line 58, in get_wxapp\n    wxapp = wx.App(redirect=redirect, clearSigInt=clearSigInt)\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wx/core.py\", line 2197, in __init__\n    raise SystemExit(msg)\nSystemExit: Unable to access the X Display, is $DISPLAY set properly?\n",
+                    "stdout": "test.inp,\ncopying test.inp  to  test_feff/test_feff.inp\n : ======== running Feff module /home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/larch/bin/linux64/feff6l ========\n : Feff 6L.02\n : Rh4 (C O)12\n : Wei, C.H.\n : Structural analyses of tetracobalt dodecacarbonyl and tetrarhodium\n : dodecacarbonyl. crystallographic treatments of a disordered structure and\n : a twinned composite\n : Calculating potentials and phases...\n : free atom potential and density for atom type    0\n : free atom potential and density for atom type    1\n : free atom potential and density for atom type    2\n : free atom potential and density for atom type    3\n : overlapped potential and density for unique potential    0\n : overlapped potential and density for unique potential    1\n : overlapped potential and density for unique potential    2\n : overlapped potential and density for unique potential    3\n : muffin tin radii and interstitial parameters\n : phase shifts for unique potential    0\n : phase shifts for unique potential    1\n : phase shifts for unique potential    2\n : phase shifts for unique potential    3\n : Preparing plane wave scattering amplitudes...\n : nncrit in prcrit       9\n : Searching for paths...\n : Rmax  5.0000  keep and heap limits   0.0000000   0.0000000\n : Preparing neighbor table\n : nfound  nheap  nheapx  nsc    r\n : Paths found      403   (nheapx, nbx      99   8)\n : Eliminating path degeneracies...\n : Plane wave chi amplitude filter   2.50%\n : Unique paths    115,  total paths     177\n : Calculating EXAFS parameters...\n : Curved wave chi amplitude ratio   4.00%\n : Discard feff.dat for paths with cw ratio <   2.67%\n : path  cw ratio     deg    nleg  reff\n : 1   100.000     1.000     2   1.9149\n : 2    91.295     1.000     2   1.9854\n : 3    83.637     1.000     2   2.0550\n : 4    79.929     1.000     2   2.0917\n : 5    89.367     1.000     2   2.7050\n : 6    86.941     1.000     2   2.7337\n : 7    81.971     1.000     2   2.7957\n : 8    37.159     1.000     2   3.0163\n : 9   100.000     2.000     3   3.0167\n : 10    76.145     1.000     4   3.0170\n : 11    32.597     1.000     2   3.0220\n : 12    29.179     1.000     2   3.1366\n : 13    25.921     2.000     3   3.1653\n : 14    27.950     1.000     2   3.1819\n : 15    58.926     2.000     3   3.2132\n : 16    32.939     1.000     4   3.2445\n : 17    21.901     2.000     3   3.2875\n : 18     7.728     1.000     4   3.3087\n : 19     5.677     2.000     3   3.3214\n : 20     5.763     2.000     3   3.3260\n : 21     6.231     1.000     4   3.4384\n : 22     2.425     2.000     3   3.4558 neglected\n : 23    16.232     1.000     2   3.5372\n : 24     3.728     2.000     3   3.5425\n : 25    15.819     1.000     2   3.5671\n : 26     3.312     2.000     3   3.5939\n : 27     4.223     2.000     3   3.6181\n : 28     2.572     2.000     3   3.6489 neglected\n : 29    14.227     1.000     2   3.6920\n : 30    11.517     2.000     3   3.8220\n : 31     4.455     1.000     4   3.8297\n : 32    12.091     1.000     2   3.8888\n : 33    15.264     2.000     4   3.9003\n : 34    14.184     1.000     2   3.9535\n : 35     3.684     1.000     4   3.9708\n : 36    10.240     1.000     4   3.9783\n : 37    32.052     2.000     5   3.9787\n : 38    25.210     1.000     6   3.9790\n : 39    11.124     1.000     2   3.9920\n : 40    13.715     1.000     2   3.9945\n : 41     8.332     2.000     3   4.0838\n : 42     3.048     2.000     3   4.0890\n : 43     3.260     2.000     3   4.1013\n : 44     3.073     1.000     4   4.1100\n : 45     7.914     2.000     3   4.1209\n : 46     3.206     2.000     3   4.1223\n : 47     2.799     1.000     4   4.1834\n : 48     7.874     2.000     3   4.1912\n : 49     1.425     2.000     3   4.2145 neglected\n : 50     8.949     1.000     2   4.2696\n : 51    10.748     1.000     2   4.3002\n : 52    10.714     1.000     2   4.3043\n : 53    10.621     1.000     2   4.3155\n : 54     7.182     2.000     3   4.3251\n : 55     5.235     1.000     4   4.3347\n : 56     1.577     2.000     3   4.3415 neglected\n : 57     3.558     1.000     4   4.3452\n : 58     8.350     1.000     2   4.3603\n : 59    12.514     2.000     5   4.3660\n : 60    16.294     2.000     3   4.3787\n : 61     1.866     2.000     3   4.3964 neglected\n : 62     7.648     1.000     6   4.3972\n : 63     6.643     2.000     3   4.4001\n : 64    13.337     2.000     3   4.4055\n : 65     2.179     2.000     4   4.4289 neglected\n : 66     5.926     2.000     3   4.4541\n : 67     1.929     2.000     4   4.4805 neglected\n : 68     9.336     1.000     2   4.4832\n : 69     7.222     1.000     4   4.4878\n : 70     4.653     2.000     5   4.4886\n : 71    12.751     2.000     3   4.4927\n : 72     5.932     1.000     4   4.4955\n : 73     2.547     2.000     5   4.5045 neglected\n : 74     2.232     2.000     4   4.5397 neglected\n : 75     2.262     2.000     5   4.5559 neglected\n : 76     1.888     2.000     3   4.5571 neglected\n : 77     1.544     2.000     3   4.5599 neglected\n : 78     3.284     2.000     3   4.5615\n : 79     2.902     2.000     3   4.5732\n : 80     3.436     2.000     3   4.6064\n : 81     4.653     1.000     4   4.6251\n : 82     6.854     2.000     3   4.6311\n : 83     6.727     1.000     2   4.6507\n : 84     8.204     1.000     2   4.6551\n : 85     2.780     2.000     3   4.6567\n : 86     2.354     1.000     4   4.6601 neglected\n : 87     3.264     2.000     3   4.6645\n : 88     6.619     1.000     2   4.6730\n : 89     3.068     2.000     4   4.6823\n : 90     1.803     2.000     4   4.7108 neglected\n : 91    18.587     2.000     3   4.7211\n : 92    13.756     1.000     4   4.7692\n : 93     2.182     1.000     4   4.7791 neglected\n : 94     6.951     2.000     3   4.7831\n : 95     6.102     2.000     3   4.7842\n : 96     2.095     2.000     4   4.7887 neglected\n : 97     2.457     2.000     4   4.7891 neglected\n : 98    10.393     2.000     4   4.7967\n : 99     2.759     2.000     5   4.8110\n : 100     0.984     2.000     3   4.8201 neglected\n : 101     1.949     2.000     4   4.8507 neglected\n : 102     7.049     1.000     2   4.8622\n : 103     2.435     2.000     3   4.8868 neglected\n : 104     6.792     1.000     2   4.9136\n : 105     5.690     2.000     3   4.9161\n : 106     2.369     1.000     4   4.9155 neglected\n : 107    11.074     2.000     3   4.9167\n : 108    10.137     2.000     4   4.9368\n : 109     5.170     1.000     6   4.9403\n : 110    16.546     2.000     7   4.9407\n : 111    13.280     1.000     8   4.9410\n : 112     3.562     2.000     3   4.9549\n : 113     5.689     2.000     4   4.9593\n : 114     5.096     1.000     4   4.9712\n : 115     6.492     1.000     2   4.9766\n : 94 paths kept,  115 examined.\n : Feff done.  Have a nice day.\n",
+                    "tool_id": "larch_artemis",
+                    "tool_stderr": "[matplotlib.font_manager] INFO : generated new fontManager\nException ignored in atexit callback: <function __wxmainloop__ at 0x7f1643729f30>\nTraceback (most recent call last):\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wxmplot/interactive.py\", line 68, in __wxmainloop__\n    get_wxapp().MainLoop()\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wxmplot/interactive.py\", line 58, in get_wxapp\n    wxapp = wx.App(redirect=redirect, clearSigInt=clearSigInt)\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wx/core.py\", line 2197, in __init__\n    raise SystemExit(msg)\nSystemExit: Unable to access the X Display, is $DISPLAY set properly?\n",
+                    "tool_stdout": "test.inp,\ncopying test.inp  to  test_feff/test_feff.inp\n : ======== running Feff module /home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/larch/bin/linux64/feff6l ========\n : Feff 6L.02\n : Rh4 (C O)12\n : Wei, C.H.\n : Structural analyses of tetracobalt dodecacarbonyl and tetrarhodium\n : dodecacarbonyl. crystallographic treatments of a disordered structure and\n : a twinned composite\n : Calculating potentials and phases...\n : free atom potential and density for atom type    0\n : free atom potential and density for atom type    1\n : free atom potential and density for atom type    2\n : free atom potential and density for atom type    3\n : overlapped potential and density for unique potential    0\n : overlapped potential and density for unique potential    1\n : overlapped potential and density for unique potential    2\n : overlapped potential and density for unique potential    3\n : muffin tin radii and interstitial parameters\n : phase shifts for unique potential    0\n : phase shifts for unique potential    1\n : phase shifts for unique potential    2\n : phase shifts for unique potential    3\n : Preparing plane wave scattering amplitudes...\n : nncrit in prcrit       9\n : Searching for paths...\n : Rmax  5.0000  keep and heap limits   0.0000000   0.0000000\n : Preparing neighbor table\n : nfound  nheap  nheapx  nsc    r\n : Paths found      403   (nheapx, nbx      99   8)\n : Eliminating path degeneracies...\n : Plane wave chi amplitude filter   2.50%\n : Unique paths    115,  total paths     177\n : Calculating EXAFS parameters...\n : Curved wave chi amplitude ratio   4.00%\n : Discard feff.dat for paths with cw ratio <   2.67%\n : path  cw ratio     deg    nleg  reff\n : 1   100.000     1.000     2   1.9149\n : 2    91.295     1.000     2   1.9854\n : 3    83.637     1.000     2   2.0550\n : 4    79.929     1.000     2   2.0917\n : 5    89.367     1.000     2   2.7050\n : 6    86.941     1.000     2   2.7337\n : 7    81.971     1.000     2   2.7957\n : 8    37.159     1.000     2   3.0163\n : 9   100.000     2.000     3   3.0167\n : 10    76.145     1.000     4   3.0170\n : 11    32.597     1.000     2   3.0220\n : 12    29.179     1.000     2   3.1366\n : 13    25.921     2.000     3   3.1653\n : 14    27.950     1.000     2   3.1819\n : 15    58.926     2.000     3   3.2132\n : 16    32.939     1.000     4   3.2445\n : 17    21.901     2.000     3   3.2875\n : 18     7.728     1.000     4   3.3087\n : 19     5.677     2.000     3   3.3214\n : 20     5.763     2.000     3   3.3260\n : 21     6.231     1.000     4   3.4384\n : 22     2.425     2.000     3   3.4558 neglected\n : 23    16.232     1.000     2   3.5372\n : 24     3.728     2.000     3   3.5425\n : 25    15.819     1.000     2   3.5671\n : 26     3.312     2.000     3   3.5939\n : 27     4.223     2.000     3   3.6181\n : 28     2.572     2.000     3   3.6489 neglected\n : 29    14.227     1.000     2   3.6920\n : 30    11.517     2.000     3   3.8220\n : 31     4.455     1.000     4   3.8297\n : 32    12.091     1.000     2   3.8888\n : 33    15.264     2.000     4   3.9003\n : 34    14.184     1.000     2   3.9535\n : 35     3.684     1.000     4   3.9708\n : 36    10.240     1.000     4   3.9783\n : 37    32.052     2.000     5   3.9787\n : 38    25.210     1.000     6   3.9790\n : 39    11.124     1.000     2   3.9920\n : 40    13.715     1.000     2   3.9945\n : 41     8.332     2.000     3   4.0838\n : 42     3.048     2.000     3   4.0890\n : 43     3.260     2.000     3   4.1013\n : 44     3.073     1.000     4   4.1100\n : 45     7.914     2.000     3   4.1209\n : 46     3.206     2.000     3   4.1223\n : 47     2.799     1.000     4   4.1834\n : 48     7.874     2.000     3   4.1912\n : 49     1.425     2.000     3   4.2145 neglected\n : 50     8.949     1.000     2   4.2696\n : 51    10.748     1.000     2   4.3002\n : 52    10.714     1.000     2   4.3043\n : 53    10.621     1.000     2   4.3155\n : 54     7.182     2.000     3   4.3251\n : 55     5.235     1.000     4   4.3347\n : 56     1.577     2.000     3   4.3415 neglected\n : 57     3.558     1.000     4   4.3452\n : 58     8.350     1.000     2   4.3603\n : 59    12.514     2.000     5   4.3660\n : 60    16.294     2.000     3   4.3787\n : 61     1.866     2.000     3   4.3964 neglected\n : 62     7.648     1.000     6   4.3972\n : 63     6.643     2.000     3   4.4001\n : 64    13.337     2.000     3   4.4055\n : 65     2.179     2.000     4   4.4289 neglected\n : 66     5.926     2.000     3   4.4541\n : 67     1.929     2.000     4   4.4805 neglected\n : 68     9.336     1.000     2   4.4832\n : 69     7.222     1.000     4   4.4878\n : 70     4.653     2.000     5   4.4886\n : 71    12.751     2.000     3   4.4927\n : 72     5.932     1.000     4   4.4955\n : 73     2.547     2.000     5   4.5045 neglected\n : 74     2.232     2.000     4   4.5397 neglected\n : 75     2.262     2.000     5   4.5559 neglected\n : 76     1.888     2.000     3   4.5571 neglected\n : 77     1.544     2.000     3   4.5599 neglected\n : 78     3.284     2.000     3   4.5615\n : 79     2.902     2.000     3   4.5732\n : 80     3.436     2.000     3   4.6064\n : 81     4.653     1.000     4   4.6251\n : 82     6.854     2.000     3   4.6311\n : 83     6.727     1.000     2   4.6507\n : 84     8.204     1.000     2   4.6551\n : 85     2.780     2.000     3   4.6567\n : 86     2.354     1.000     4   4.6601 neglected\n : 87     3.264     2.000     3   4.6645\n : 88     6.619     1.000     2   4.6730\n : 89     3.068     2.000     4   4.6823\n : 90     1.803     2.000     4   4.7108 neglected\n : 91    18.587     2.000     3   4.7211\n : 92    13.756     1.000     4   4.7692\n : 93     2.182     1.000     4   4.7791 neglected\n : 94     6.951     2.000     3   4.7831\n : 95     6.102     2.000     3   4.7842\n : 96     2.095     2.000     4   4.7887 neglected\n : 97     2.457     2.000     4   4.7891 neglected\n : 98    10.393     2.000     4   4.7967\n : 99     2.759     2.000     5   4.8110\n : 100     0.984     2.000     3   4.8201 neglected\n : 101     1.949     2.000     4   4.8507 neglected\n : 102     7.049     1.000     2   4.8622\n : 103     2.435     2.000     3   4.8868 neglected\n : 104     6.792     1.000     2   4.9136\n : 105     5.690     2.000     3   4.9161\n : 106     2.369     1.000     4   4.9155 neglected\n : 107    11.074     2.000     3   4.9167\n : 108    10.137     2.000     4   4.9368\n : 109     5.170     1.000     6   4.9403\n : 110    16.546     2.000     7   4.9407\n : 111    13.280     1.000     8   4.9410\n : 112     3.562     2.000     3   4.9549\n : 113     5.689     2.000     4   4.9593\n : 114     5.096     1.000     4   4.9712\n : 115     6.492     1.000     2   4.9766\n : 94 paths kept,  115 examined.\n : Feff done.  Have a nice day.\n",
+                    "traceback": null,
+                    "update_time": "2023-02-21T15:24:47.134873",
+                    "user_email": "planemo@galaxyproject.org"
+                },
+                "status": "success",
+                "test_index": 0,
+                "time_seconds": 29.12759232521057,
+                "tool_id": "larch_artemis",
+                "tool_version": "0.9.66+galaxy0"
+            },
+            "has_data": true,
+            "id": "larch_artemis-0"
+        },
+        {
+            "data": {
+                "inputs": {
+                    "gds_file": {
+                        "id": "e175b10d5ff72f61",
+                        "src": "hda"
+                    },
+                    "plot_graph": true,
+                    "prj_file": {
+                        "id": "3425b9c2002eed6d",
+                        "src": "hda"
+                    },
+                    "sp_file": {
+                        "id": "a4b03eb5b57ef8fe",
+                        "src": "hda"
+                    },
+                    "structure_files": {
+                        "id": "ebed97324056ba2b",
+                        "src": "hda"
+                    }
+                },
+                "job": {
+                    "command_line": "structure_files_renamed='' && ln -s '/tmp/tmpft6ccv2g/files/a/0/b/dataset_a0b7012d-0522-4451-910b-48e2f471c333.dat' 'test.inp' && structure_files_renamed+='test.inp,' && echo $structure_files_renamed && python '/home/kez92691/XAS-Workflow-Demo/larch_galaxy/larch_artemis/larch_artemis.py' '/tmp/tmpft6ccv2g/files/2/8/4/dataset_284305dd-2b92-43fb-b859-e22bc677c391.dat' $structure_files_renamed '/tmp/tmpft6ccv2g/files/0/a/f/dataset_0af4e2c3-580a-4827-955c-7c7a6d716623.dat' '/tmp/tmpft6ccv2g/files/f/1/8/dataset_f181bfaa-41aa-48e5-b8af-55f5c1bec2aa.dat' '/tmp/tmpft6ccv2g/job_working_directory/000/10/configs/tmp27sz_t34'",
+                    "command_version": "",
+                    "create_time": "2023-02-21T15:25:04.223563",
+                    "dependencies": [
+                        {
+                            "cacheable": false,
+                            "dependency_resolver": {
+                                "auto_init": true,
+                                "auto_install": true,
+                                "can_uninstall_dependencies": true,
+                                "ensure_channels": "conda-forge,bioconda,defaults",
+                                "model_class": "CondaDependencyResolver",
+                                "prefix": "/home/kez92691/miniconda3",
+                                "read_only": false,
+                                "resolver_type": "conda",
+                                "resolves_simple_dependencies": true,
+                                "use_local": false,
+                                "versionless": false
+                            },
+                            "dependency_type": "conda",
+                            "environment_path": "/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b",
+                            "exact": true,
+                            "model_class": "MergedCondaDependency",
+                            "name": "xraylarch",
+                            "version": "0.9.66"
+                        },
+                        {
+                            "cacheable": false,
+                            "dependency_resolver": {
+                                "auto_init": true,
+                                "auto_install": true,
+                                "can_uninstall_dependencies": true,
+                                "ensure_channels": "conda-forge,bioconda,defaults",
+                                "model_class": "CondaDependencyResolver",
+                                "prefix": "/home/kez92691/miniconda3",
+                                "read_only": false,
+                                "resolver_type": "conda",
+                                "resolves_simple_dependencies": true,
+                                "use_local": false,
+                                "versionless": false
+                            },
+                            "dependency_type": "conda",
+                            "environment_path": "/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b",
+                            "exact": true,
+                            "model_class": "MergedCondaDependency",
+                            "name": "matplotlib",
+                            "version": "3.5.2"
+                        },
+                        {
+                            "cacheable": false,
+                            "dependency_resolver": {
+                                "auto_init": true,
+                                "auto_install": true,
+                                "can_uninstall_dependencies": true,
+                                "ensure_channels": "conda-forge,bioconda,defaults",
+                                "model_class": "CondaDependencyResolver",
+                                "prefix": "/home/kez92691/miniconda3",
+                                "read_only": false,
+                                "resolver_type": "conda",
+                                "resolves_simple_dependencies": true,
+                                "use_local": false,
+                                "versionless": false
+                            },
+                            "dependency_type": "conda",
+                            "environment_path": "/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b",
+                            "exact": true,
+                            "model_class": "MergedCondaDependency",
+                            "name": "xraydb",
+                            "version": "4.4.7"
+                        },
+                        {
+                            "cacheable": false,
+                            "dependency_resolver": {
+                                "auto_init": true,
+                                "auto_install": true,
+                                "can_uninstall_dependencies": true,
+                                "ensure_channels": "conda-forge,bioconda,defaults",
+                                "model_class": "CondaDependencyResolver",
+                                "prefix": "/home/kez92691/miniconda3",
+                                "read_only": false,
+                                "resolver_type": "conda",
+                                "resolves_simple_dependencies": true,
+                                "use_local": false,
+                                "versionless": false
+                            },
+                            "dependency_type": "conda",
+                            "environment_path": "/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b",
+                            "exact": true,
+                            "model_class": "MergedCondaDependency",
+                            "name": "sqlalchemy",
+                            "version": "1.4.46"
+                        }
+                    ],
+                    "exit_code": 0,
+                    "external_id": "27943",
+                    "galaxy_version": "22.05",
+                    "history_id": "4fe2a33f73bbe0f8",
+                    "id": "e36ac8b1e4c3cb06",
+                    "inputs": {
+                        "gds_file": {
+                            "id": "e175b10d5ff72f61",
+                            "src": "hda",
+                            "uuid": "0af4e2c3-580a-4827-955c-7c7a6d716623"
+                        },
+                        "prj_file": {
+                            "id": "3425b9c2002eed6d",
+                            "src": "hda",
+                            "uuid": "284305dd-2b92-43fb-b859-e22bc677c391"
+                        },
+                        "sp_file": {
+                            "id": "a4b03eb5b57ef8fe",
+                            "src": "hda",
+                            "uuid": "f181bfaa-41aa-48e5-b8af-55f5c1bec2aa"
+                        },
+                        "structure_files": {
+                            "id": "ebed97324056ba2b",
+                            "src": "hda",
+                            "uuid": "a0b7012d-0522-4451-910b-48e2f471c333"
+                        },
+                        "structure_files1": {
+                            "id": "ebed97324056ba2b",
+                            "src": "hda",
+                            "uuid": "a0b7012d-0522-4451-910b-48e2f471c333"
+                        }
+                    },
+                    "job_messages": [],
+                    "job_metrics": [],
+                    "job_stderr": "",
+                    "job_stdout": "",
+                    "model_class": "Job",
+                    "output_collections": {},
+                    "outputs": {
+                        "chikr": {
+                            "id": "8ca06cc45180d781",
+                            "src": "hda",
+                            "uuid": "2d5b0899-4a28-4f4b-9300-f49ef8c71d9a"
+                        },
+                        "fit_report": {
+                            "id": "e36ac8b1e4c3cb06",
+                            "src": "hda",
+                            "uuid": "4565c869-2a44-4959-8045-ab57daa6d018"
+                        },
+                        "norm": {
+                            "id": "ddda81775c9cae19",
+                            "src": "hda",
+                            "uuid": "3f5e70ea-97e5-4125-93e7-e09b1d302051"
+                        },
+                        "rmr": {
+                            "id": "ce68b0e2fd7dfd04",
+                            "src": "hda",
+                            "uuid": "0c72ee01-a6b4-491e-b575-8e4e5de073c4"
+                        }
+                    },
+                    "params": {
+                        "__input_ext": "\"input\"",
+                        "chromInfo": "\"/home/kez92691/muon-galaxy/tool-data/shared/ucsc/chrom/?.len\"",
+                        "dbkey": "\"?\"",
+                        "fit_vars": "{\"dk\": \"1\", \"fitspace\": \"r\", \"kmax\": \"14\", \"kmin\": \"3\", \"kw\": \"2\", \"rmax\": \"3.0\", \"rmin\": \"1.4\", \"window\": \"hanning\"}",
+                        "plot_graph": "\"true\""
+                    },
+                    "state": "ok",
+                    "stderr": "[matplotlib.font_manager] INFO : generated new fontManager\nException ignored in atexit callback: <function __wxmainloop__ at 0x7f7f2efbdf30>\nTraceback (most recent call last):\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wxmplot/interactive.py\", line 68, in __wxmainloop__\n    get_wxapp().MainLoop()\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wxmplot/interactive.py\", line 58, in get_wxapp\n    wxapp = wx.App(redirect=redirect, clearSigInt=clearSigInt)\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wx/core.py\", line 2197, in __init__\n    raise SystemExit(msg)\nSystemExit: Unable to access the X Display, is $DISPLAY set properly?\n",
+                    "stdout": "test.inp,\ncopying test.inp  to  test_feff/test_feff.inp\n : ======== running Feff module /home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/larch/bin/linux64/feff6l ========\n : Feff 6L.02\n : Rh4 (C O)12\n : Wei, C.H.\n : Structural analyses of tetracobalt dodecacarbonyl and tetrarhodium\n : dodecacarbonyl. crystallographic treatments of a disordered structure and\n : a twinned composite\n : Calculating potentials and phases...\n : free atom potential and density for atom type    0\n : free atom potential and density for atom type    1\n : free atom potential and density for atom type    2\n : free atom potential and density for atom type    3\n : overlapped potential and density for unique potential    0\n : overlapped potential and density for unique potential    1\n : overlapped potential and density for unique potential    2\n : overlapped potential and density for unique potential    3\n : muffin tin radii and interstitial parameters\n : phase shifts for unique potential    0\n : phase shifts for unique potential    1\n : phase shifts for unique potential    2\n : phase shifts for unique potential    3\n : Preparing plane wave scattering amplitudes...\n : nncrit in prcrit       9\n : Searching for paths...\n : Rmax  5.0000  keep and heap limits   0.0000000   0.0000000\n : Preparing neighbor table\n : nfound  nheap  nheapx  nsc    r\n : Paths found      403   (nheapx, nbx      99   8)\n : Eliminating path degeneracies...\n : Plane wave chi amplitude filter   2.50%\n : Unique paths    115,  total paths     177\n : Calculating EXAFS parameters...\n : Curved wave chi amplitude ratio   4.00%\n : Discard feff.dat for paths with cw ratio <   2.67%\n : path  cw ratio     deg    nleg  reff\n : 1   100.000     1.000     2   1.9149\n : 2    91.295     1.000     2   1.9854\n : 3    83.637     1.000     2   2.0550\n : 4    79.929     1.000     2   2.0917\n : 5    89.367     1.000     2   2.7050\n : 6    86.941     1.000     2   2.7337\n : 7    81.971     1.000     2   2.7957\n : 8    37.159     1.000     2   3.0163\n : 9   100.000     2.000     3   3.0167\n : 10    76.145     1.000     4   3.0170\n : 11    32.597     1.000     2   3.0220\n : 12    29.179     1.000     2   3.1366\n : 13    25.921     2.000     3   3.1653\n : 14    27.950     1.000     2   3.1819\n : 15    58.926     2.000     3   3.2132\n : 16    32.939     1.000     4   3.2445\n : 17    21.901     2.000     3   3.2875\n : 18     7.728     1.000     4   3.3087\n : 19     5.677     2.000     3   3.3214\n : 20     5.763     2.000     3   3.3260\n : 21     6.231     1.000     4   3.4384\n : 22     2.425     2.000     3   3.4558 neglected\n : 23    16.232     1.000     2   3.5372\n : 24     3.728     2.000     3   3.5425\n : 25    15.819     1.000     2   3.5671\n : 26     3.312     2.000     3   3.5939\n : 27     4.223     2.000     3   3.6181\n : 28     2.572     2.000     3   3.6489 neglected\n : 29    14.227     1.000     2   3.6920\n : 30    11.517     2.000     3   3.8220\n : 31     4.455     1.000     4   3.8297\n : 32    12.091     1.000     2   3.8888\n : 33    15.264     2.000     4   3.9003\n : 34    14.184     1.000     2   3.9535\n : 35     3.684     1.000     4   3.9708\n : 36    10.240     1.000     4   3.9783\n : 37    32.052     2.000     5   3.9787\n : 38    25.210     1.000     6   3.9790\n : 39    11.124     1.000     2   3.9920\n : 40    13.715     1.000     2   3.9945\n : 41     8.332     2.000     3   4.0838\n : 42     3.048     2.000     3   4.0890\n : 43     3.260     2.000     3   4.1013\n : 44     3.073     1.000     4   4.1100\n : 45     7.914     2.000     3   4.1209\n : 46     3.206     2.000     3   4.1223\n : 47     2.799     1.000     4   4.1834\n : 48     7.874     2.000     3   4.1912\n : 49     1.425     2.000     3   4.2145 neglected\n : 50     8.949     1.000     2   4.2696\n : 51    10.748     1.000     2   4.3002\n : 52    10.714     1.000     2   4.3043\n : 53    10.621     1.000     2   4.3155\n : 54     7.182     2.000     3   4.3251\n : 55     5.235     1.000     4   4.3347\n : 56     1.577     2.000     3   4.3415 neglected\n : 57     3.558     1.000     4   4.3452\n : 58     8.350     1.000     2   4.3603\n : 59    12.514     2.000     5   4.3660\n : 60    16.294     2.000     3   4.3787\n : 61     1.866     2.000     3   4.3964 neglected\n : 62     7.648     1.000     6   4.3972\n : 63     6.643     2.000     3   4.4001\n : 64    13.337     2.000     3   4.4055\n : 65     2.179     2.000     4   4.4289 neglected\n : 66     5.926     2.000     3   4.4541\n : 67     1.929     2.000     4   4.4805 neglected\n : 68     9.336     1.000     2   4.4832\n : 69     7.222     1.000     4   4.4878\n : 70     4.653     2.000     5   4.4886\n : 71    12.751     2.000     3   4.4927\n : 72     5.932     1.000     4   4.4955\n : 73     2.547     2.000     5   4.5045 neglected\n : 74     2.232     2.000     4   4.5397 neglected\n : 75     2.262     2.000     5   4.5559 neglected\n : 76     1.888     2.000     3   4.5571 neglected\n : 77     1.544     2.000     3   4.5599 neglected\n : 78     3.284     2.000     3   4.5615\n : 79     2.902     2.000     3   4.5732\n : 80     3.436     2.000     3   4.6064\n : 81     4.653     1.000     4   4.6251\n : 82     6.854     2.000     3   4.6311\n : 83     6.727     1.000     2   4.6507\n : 84     8.204     1.000     2   4.6551\n : 85     2.780     2.000     3   4.6567\n : 86     2.354     1.000     4   4.6601 neglected\n : 87     3.264     2.000     3   4.6645\n : 88     6.619     1.000     2   4.6730\n : 89     3.068     2.000     4   4.6823\n : 90     1.803     2.000     4   4.7108 neglected\n : 91    18.587     2.000     3   4.7211\n : 92    13.756     1.000     4   4.7692\n : 93     2.182     1.000     4   4.7791 neglected\n : 94     6.951     2.000     3   4.7831\n : 95     6.102     2.000     3   4.7842\n : 96     2.095     2.000     4   4.7887 neglected\n : 97     2.457     2.000     4   4.7891 neglected\n : 98    10.393     2.000     4   4.7967\n : 99     2.759     2.000     5   4.8110\n : 100     0.984     2.000     3   4.8201 neglected\n : 101     1.949     2.000     4   4.8507 neglected\n : 102     7.049     1.000     2   4.8622\n : 103     2.435     2.000     3   4.8868 neglected\n : 104     6.792     1.000     2   4.9136\n : 105     5.690     2.000     3   4.9161\n : 106     2.369     1.000     4   4.9155 neglected\n : 107    11.074     2.000     3   4.9167\n : 108    10.137     2.000     4   4.9368\n : 109     5.170     1.000     6   4.9403\n : 110    16.546     2.000     7   4.9407\n : 111    13.280     1.000     8   4.9410\n : 112     3.562     2.000     3   4.9549\n : 113     5.689     2.000     4   4.9593\n : 114     5.096     1.000     4   4.9712\n : 115     6.492     1.000     2   4.9766\n : 94 paths kept,  115 examined.\n : Feff done.  Have a nice day.\n",
+                    "tool_id": "larch_artemis",
+                    "tool_stderr": "[matplotlib.font_manager] INFO : generated new fontManager\nException ignored in atexit callback: <function __wxmainloop__ at 0x7f7f2efbdf30>\nTraceback (most recent call last):\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wxmplot/interactive.py\", line 68, in __wxmainloop__\n    get_wxapp().MainLoop()\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wxmplot/interactive.py\", line 58, in get_wxapp\n    wxapp = wx.App(redirect=redirect, clearSigInt=clearSigInt)\n  File \"/home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/wx/core.py\", line 2197, in __init__\n    raise SystemExit(msg)\nSystemExit: Unable to access the X Display, is $DISPLAY set properly?\n",
+                    "tool_stdout": "test.inp,\ncopying test.inp  to  test_feff/test_feff.inp\n : ======== running Feff module /home/kez92691/miniconda3/envs/mulled-v1-9c4fc30618556d0b00c996a6851860796732e1429dfcd17a2b36b342bfbd8e8b/lib/python3.10/site-packages/larch/bin/linux64/feff6l ========\n : Feff 6L.02\n : Rh4 (C O)12\n : Wei, C.H.\n : Structural analyses of tetracobalt dodecacarbonyl and tetrarhodium\n : dodecacarbonyl. crystallographic treatments of a disordered structure and\n : a twinned composite\n : Calculating potentials and phases...\n : free atom potential and density for atom type    0\n : free atom potential and density for atom type    1\n : free atom potential and density for atom type    2\n : free atom potential and density for atom type    3\n : overlapped potential and density for unique potential    0\n : overlapped potential and density for unique potential    1\n : overlapped potential and density for unique potential    2\n : overlapped potential and density for unique potential    3\n : muffin tin radii and interstitial parameters\n : phase shifts for unique potential    0\n : phase shifts for unique potential    1\n : phase shifts for unique potential    2\n : phase shifts for unique potential    3\n : Preparing plane wave scattering amplitudes...\n : nncrit in prcrit       9\n : Searching for paths...\n : Rmax  5.0000  keep and heap limits   0.0000000   0.0000000\n : Preparing neighbor table\n : nfound  nheap  nheapx  nsc    r\n : Paths found      403   (nheapx, nbx      99   8)\n : Eliminating path degeneracies...\n : Plane wave chi amplitude filter   2.50%\n : Unique paths    115,  total paths     177\n : Calculating EXAFS parameters...\n : Curved wave chi amplitude ratio   4.00%\n : Discard feff.dat for paths with cw ratio <   2.67%\n : path  cw ratio     deg    nleg  reff\n : 1   100.000     1.000     2   1.9149\n : 2    91.295     1.000     2   1.9854\n : 3    83.637     1.000     2   2.0550\n : 4    79.929     1.000     2   2.0917\n : 5    89.367     1.000     2   2.7050\n : 6    86.941     1.000     2   2.7337\n : 7    81.971     1.000     2   2.7957\n : 8    37.159     1.000     2   3.0163\n : 9   100.000     2.000     3   3.0167\n : 10    76.145     1.000     4   3.0170\n : 11    32.597     1.000     2   3.0220\n : 12    29.179     1.000     2   3.1366\n : 13    25.921     2.000     3   3.1653\n : 14    27.950     1.000     2   3.1819\n : 15    58.926     2.000     3   3.2132\n : 16    32.939     1.000     4   3.2445\n : 17    21.901     2.000     3   3.2875\n : 18     7.728     1.000     4   3.3087\n : 19     5.677     2.000     3   3.3214\n : 20     5.763     2.000     3   3.3260\n : 21     6.231     1.000     4   3.4384\n : 22     2.425     2.000     3   3.4558 neglected\n : 23    16.232     1.000     2   3.5372\n : 24     3.728     2.000     3   3.5425\n : 25    15.819     1.000     2   3.5671\n : 26     3.312     2.000     3   3.5939\n : 27     4.223     2.000     3   3.6181\n : 28     2.572     2.000     3   3.6489 neglected\n : 29    14.227     1.000     2   3.6920\n : 30    11.517     2.000     3   3.8220\n : 31     4.455     1.000     4   3.8297\n : 32    12.091     1.000     2   3.8888\n : 33    15.264     2.000     4   3.9003\n : 34    14.184     1.000     2   3.9535\n : 35     3.684     1.000     4   3.9708\n : 36    10.240     1.000     4   3.9783\n : 37    32.052     2.000     5   3.9787\n : 38    25.210     1.000     6   3.9790\n : 39    11.124     1.000     2   3.9920\n : 40    13.715     1.000     2   3.9945\n : 41     8.332     2.000     3   4.0838\n : 42     3.048     2.000     3   4.0890\n : 43     3.260     2.000     3   4.1013\n : 44     3.073     1.000     4   4.1100\n : 45     7.914     2.000     3   4.1209\n : 46     3.206     2.000     3   4.1223\n : 47     2.799     1.000     4   4.1834\n : 48     7.874     2.000     3   4.1912\n : 49     1.425     2.000     3   4.2145 neglected\n : 50     8.949     1.000     2   4.2696\n : 51    10.748     1.000     2   4.3002\n : 52    10.714     1.000     2   4.3043\n : 53    10.621     1.000     2   4.3155\n : 54     7.182     2.000     3   4.3251\n : 55     5.235     1.000     4   4.3347\n : 56     1.577     2.000     3   4.3415 neglected\n : 57     3.558     1.000     4   4.3452\n : 58     8.350     1.000     2   4.3603\n : 59    12.514     2.000     5   4.3660\n : 60    16.294     2.000     3   4.3787\n : 61     1.866     2.000     3   4.3964 neglected\n : 62     7.648     1.000     6   4.3972\n : 63     6.643     2.000     3   4.4001\n : 64    13.337     2.000     3   4.4055\n : 65     2.179     2.000     4   4.4289 neglected\n : 66     5.926     2.000     3   4.4541\n : 67     1.929     2.000     4   4.4805 neglected\n : 68     9.336     1.000     2   4.4832\n : 69     7.222     1.000     4   4.4878\n : 70     4.653     2.000     5   4.4886\n : 71    12.751     2.000     3   4.4927\n : 72     5.932     1.000     4   4.4955\n : 73     2.547     2.000     5   4.5045 neglected\n : 74     2.232     2.000     4   4.5397 neglected\n : 75     2.262     2.000     5   4.5559 neglected\n : 76     1.888     2.000     3   4.5571 neglected\n : 77     1.544     2.000     3   4.5599 neglected\n : 78     3.284     2.000     3   4.5615\n : 79     2.902     2.000     3   4.5732\n : 80     3.436     2.000     3   4.6064\n : 81     4.653     1.000     4   4.6251\n : 82     6.854     2.000     3   4.6311\n : 83     6.727     1.000     2   4.6507\n : 84     8.204     1.000     2   4.6551\n : 85     2.780     2.000     3   4.6567\n : 86     2.354     1.000     4   4.6601 neglected\n : 87     3.264     2.000     3   4.6645\n : 88     6.619     1.000     2   4.6730\n : 89     3.068     2.000     4   4.6823\n : 90     1.803     2.000     4   4.7108 neglected\n : 91    18.587     2.000     3   4.7211\n : 92    13.756     1.000     4   4.7692\n : 93     2.182     1.000     4   4.7791 neglected\n : 94     6.951     2.000     3   4.7831\n : 95     6.102     2.000     3   4.7842\n : 96     2.095     2.000     4   4.7887 neglected\n : 97     2.457     2.000     4   4.7891 neglected\n : 98    10.393     2.000     4   4.7967\n : 99     2.759     2.000     5   4.8110\n : 100     0.984     2.000     3   4.8201 neglected\n : 101     1.949     2.000     4   4.8507 neglected\n : 102     7.049     1.000     2   4.8622\n : 103     2.435     2.000     3   4.8868 neglected\n : 104     6.792     1.000     2   4.9136\n : 105     5.690     2.000     3   4.9161\n : 106     2.369     1.000     4   4.9155 neglected\n : 107    11.074     2.000     3   4.9167\n : 108    10.137     2.000     4   4.9368\n : 109     5.170     1.000     6   4.9403\n : 110    16.546     2.000     7   4.9407\n : 111    13.280     1.000     8   4.9410\n : 112     3.562     2.000     3   4.9549\n : 113     5.689     2.000     4   4.9593\n : 114     5.096     1.000     4   4.9712\n : 115     6.492     1.000     2   4.9766\n : 94 paths kept,  115 examined.\n : Feff done.  Have a nice day.\n",
+                    "traceback": null,
+                    "update_time": "2023-02-21T15:25:17.853454",
+                    "user_email": "planemo@galaxyproject.org"
+                },
+                "status": "success",
+                "test_index": 1,
+                "time_seconds": 31.361468076705933,
+                "tool_id": "larch_artemis",
+                "tool_version": "0.9.66+galaxy0"
+            },
+            "has_data": true,
+            "id": "larch_artemis-1"
+        }
+    ],
+    "version": "0.1"
+}

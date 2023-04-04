@@ -19,6 +19,7 @@
         <!-- xraydb 4.5.0 is compatible with sqlalchemy 2, but is not yet available on condaforge so pin it -->
         <requirement type="package" version="4.4.7">xraydb</requirement>
         <requirement type="package" version="1.4.46">sqlalchemy</requirement>
+        <requirement type="package" version="2023.3.23">pymatgen</requirement>
     </requirements>
     <required_files>
         <include type="glob" path="lib/*.py"/>

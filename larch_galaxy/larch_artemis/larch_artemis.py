@@ -19,6 +19,8 @@ from larch.xafs import (
 import matplotlib
 import matplotlib.pyplot as plt
 
+from pymatgen.io.feff import inputs
+
 from lib import atoms_feff, handle_csv, manage_athena
 
 

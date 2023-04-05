@@ -25,20 +25,43 @@
         <include type="literal" path="larch_feff.py"/>
     </required_files>
     <command detect_errors="exit_code"><![CDATA[
-        python '${__tool_directory__}/larch_feff.py' '$structure_file'
+        python '${__tool_directory__}/larch_feff.py' '$format.structure_file' '$inputs'
         && zip -r out.zip feff
     ]]></command>
+    <configfiles>
+        <inputs name="inputs"/>
+    </configfiles>
     <inputs>
-        <param name="structure_file" type="data" format="cif, txt" label="Crystal structure file" help="Crystal structure file to be used for fitting, in CIF or FEFF .inp format."/>
+        <conditional name="format">
+            <param name="format" type="select" value="feff" label="Structure file format">
+                <option value="feff">FEFF input</option>
+                <option value="cif">CIF</option>
+            </param>
+            <when value="feff">
+                <param name="structure_file" type="data" format="txt" label="Crystal structure file" help="Crystal structure file to be used for fitting, already in FEFF .inp format."/>
+            </when>
+            <when value="cif">
+                <param name="structure_file" type="data" format="cif" label="Crystal structure file" help="Crystal structure file to be used for fitting, in CIF format."/>
+                <param name="absorbing_atom" type="text" value="0" label="Absorbing atom" help="Either the chemical symbol or index of the absorbing atom within the structure."/>
+                <param name="radius" type="float" value="4.0" label="Radius" help="Atoms within this distance of the absorbing atom will be included in the FEFF calculation. Note that this must include at least one atom for each unique potential identified in the strucutre. Larger radii will lead to more potential scattering paths."/>
+            </when>
+        </conditional>
     </inputs>
     <outputs>
-        <data name="out_csv" format="csv" from_work_dir="out.csv" label="CSV summary of ${structure_file.name}"/>
-        <data name="out_dir" format="zip" from_work_dir="out.zip" label="FEFF paths of ${structure_file.name}"/>
+        <data name="out_csv" format="csv" from_work_dir="out.csv" label="CSV summary of ${format.structure_file.name}"/>
+        <data name="out_dir" format="zip" from_work_dir="out.zip" label="FEFF paths of ${format.structure_file.name}"/>
+        <data name="feff_inp" format="txt" from_work_dir="feff/feff.inp" label="FEFF input of ${format.structure_file.name}">
+            <filter>format["format"]=="cif"</filter>
+        </data>
     </outputs>
     <tests>
     </tests>
     <help><![CDATA[
-        TODO
+        Runs a FEFF6 calculation to find potential scattering paths in the provided structure.
+
+        If a ``cif`` file is used, the formatted FEFF ``inp`` file will be produced as an output that can be used again in the future.
+        Be aware that the choice of Absorbing atom and Radius will affect the success of the calculation, as all unique potentials must be represented in the final structure.
+        It is also possible that the ``cif`` file itself is not suitable, for example chemical symbols denoting ions (e.g. ``Fe2+``) are not supported.
     ]]></help>
     <citations>
         <citation type="doi">@TOOL_CITATION@</citation>

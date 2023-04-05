@@ -1,36 +1,53 @@
-from pathlib import Path
+import csv
 import sys
 
 import json
-from typing import List
 
 from larch import Interpreter
 from larch.fitting import guess, param, param_group
+from larch.io import read_athena, extract_athenagroup
 from larch.symboltable import Group
 from larch.xafs import (
+    autobk,
     feffit,
     feffit_report,
     FeffitDataSet,
     FeffPathGroup,
     pre_edge,
     TransformGroup,
+    xftf,
 )
 
 import matplotlib
 import matplotlib.pyplot as plt
 
-from pymatgen.io.feff import inputs
 
-from lib import atoms_feff, handle_csv, manage_athena
+def get_groups(athena_project):
+    athena_groups = []
+    group_keys = list(athena_project._athena_groups.keys())
+    for group_key in group_keys:
+        gr_0 = extract_athenagroup(athena_project._athena_groups[group_key])
+        athena_groups.append(gr_0)
+    return athena_groups
+
+
+def read_csv_data(input_file, id_field="id"):
+    csv_data = {}
+    try:
+        with open(input_file, encoding="utf8") as csvfile:
+            reader = csv.DictReader(csvfile, skipinitialspace=True)
+            for row in reader:
+                csv_data[int(row[id_field])] = row
+    except FileNotFoundError:
+        print("The specified file does not exist")
+    return csv_data
 
 
 def calc_with_defaults(xafs_group: Group) -> Group:
     """Calculate pre_edge and background with default arguments"""
-    # TODO not sure what the implications of this change are?
-    # Didn't have background in our data so had to remove it from the pre_edge
     pre_edge(xafs_group)
-    manage_athena.autobk(xafs_group)
-    manage_athena.xftf(xafs_group)
+    autobk(xafs_group)
+    xftf(xafs_group)
     return xafs_group
 
 
@@ -63,18 +80,6 @@ def dict_to_gds(data_dict, session):
     return dgs_group
 
 
-def plot_normalised_all(plot_path: str, xafs_group: List[Group]):
-    for i, group in enumerate(xafs_group):
-        plt.subplot(len(xafs_group), 1, i + 1)
-        plt.plot(group.energy, group.mu, label=group.filename)
-        plt.grid(color="r", linestyle=":", linewidth=1)
-        plt.xlabel("Energy (eV)")
-        plt.ylabel("x$\mu$(E)")  # noqa: W605
-        plt.title("pre-edge and post_edge fitting to $\mu$")  # noqa: W605
-        plt.legend()
-    plt.savefig(plot_path, format="png")
-
-
 def plot_rmr(data_set, rmin, rmax):
     plt.figure()
     plt.plot(data_set.data.r, data_set.data.chir_mag, color="b")
@@ -88,7 +93,7 @@ def plot_rmr(data_set, rmin, rmax):
     plt.fill([rmin, rmin, rmax, rmax], [-rmax, rmax, rmax, -rmax], color="g", alpha=0.1)
     plt.text(rmax - 0.65, -rmax + 0.5, "fit range")
     plt.legend()
-    return plt
+    plt.savefig("rmr.png", format="png")
 
 
 def plot_chikr(data_set, rmin, rmax, kmin, kmax):
@@ -124,21 +129,21 @@ def plot_chikr(data_set, rmin, rmax, kmin, kmax):
 
     ax2.fill([rmin, rmin, rmax, rmax], [-rmax, rmax, rmax, -rmax], color="g", alpha=0.1)
     ax2.text(rmax - 0.65, -rmax + 0.5, "fit range")
-    return plt
+    fig.savefig("chikr.png", format="png")
 
 
 def read_gds(gds_file, session):
-    gds_pars, _ = handle_csv.read_csv_data(gds_file)
+    gds_pars = read_csv_data(gds_file)
     dgs_group = dict_to_gds(gds_pars, session)
     return dgs_group
 
 
 def read_selected_paths_list(file_name, session):
-    sp_dict, _ = handle_csv.read_csv_data(file_name)
+    sp_dict = read_csv_data(file_name)
     sp_list = []
     for path_id in sp_dict:
         new_path = FeffPathGroup(
-            filename=sp_dict[path_id]["filename"],
+            filename="feff/" + sp_dict[path_id]["filename"],
             label=sp_dict[path_id]["label"],
             s02=sp_dict[path_id]["s02"],
             e0=sp_dict[path_id]["e0"],
@@ -148,27 +153,6 @@ def read_selected_paths_list(file_name, session):
         )
         sp_list.append(new_path)
     return sp_list
-
-
-def run_feff(input_files: List[str]) -> List[str]:
-    """Copies each input file and runs FEFF6l calculation"""
-    # TODO check implications of changes
-    # Removed the calls to perl which convert to FEFF inp format
-    # TODO can we remove the implicit reliance on structure names in filepaths?
-    feff_dir_list = []
-    for inp_file in input_files:
-        crystal_f = Path(inp_file)
-        # use the name of the input file to define the
-        # names of the feff directory and inp file
-        feff_dir = crystal_f.name[:-4] + "_feff"
-        feff_inp = crystal_f.name[:-4] + "_feff.inp"
-        path = Path(feff_dir, feff_inp)
-        atoms_ok = atoms_feff.copy_to_feff_dir(crystal_f, path)
-        if atoms_ok:
-            # run feff to generate the scattering paths
-            atoms_feff.feff6l(folder=feff_dir, feffinp=feff_inp)
-            feff_dir_list.append(feff_dir)
-    return feff_dir_list
 
 
 def run_fit(data_group, gds, selected_paths, fv, session):
@@ -195,37 +179,18 @@ def run_fit(data_group, gds, selected_paths, fv, session):
 
 def main(
     prj_file: str,
-    structure_files: List[str],
     gds_file: str,
     sp_file: str,
     fit_vars: dict,
     plot_graph: bool,
 ):
     session = Interpreter()
-    # TODO don't know how to produce this, but the repo implies we should
-    # fpj_path = "out.fpj"
-    athena_project = manage_athena.read_project(project_file=prj_file)
-    athena_groups = manage_athena.get_groups(athena_project=athena_project)
-    data_group = calc_with_defaults(athena_groups[0])  # TODO hardcoded 0?
+    athena_project = read_athena(prj_file)
+    athena_groups = get_groups(athena_project=athena_project)
+    data_group = calc_with_defaults(athena_groups[0])
 
-    # Generate the FEFF dirs for the path selection
-    run_feff(structure_files)
-
-    # TODO In principle might want to edit this rather than loading from file
     gds = read_gds(gds_file, session)
-
-    # TODO In principle might want to edit this rather than loading from file
-    # TODO hardcoded 0
-    # path_sheet = manage_fit.show_feff_paths(structure_files[0])
-    # sp_sheet = manage_fit.show_selected_paths(path_sheet)
-    # selected_paths = manage_fit.build_selected_paths_list(sp_sheet, session)
-    # manage_fit.save_selected_paths_list(sp_sheet, spl_file)
     selected_paths = read_selected_paths_list(sp_file, session)
-
-    # TODO removed code for showing the spreadsheet - doesn't work without an ipynb
-    # TODO consider replacing with a pandas table or similar?
-
-    # TODO not doing anything with trans?
     trans, dset, out = run_fit(data_group, gds, selected_paths, fit_vars, session)
 
     fit_report = feffit_report(out, _larch=session)
@@ -233,13 +198,10 @@ def main(
         fit_report_file.write(fit_report)
 
     if plot_graph:
-        plot_normalised_all(plot_path="norm.png", xafs_group=athena_groups)
-        rmr_p = plot_rmr(dset, fit_vars["rmin"], fit_vars["rmax"])
-        rmr_p.savefig("rmr.png", format="png")
-        chikr_p = plot_chikr(
+        plot_rmr(dset, fit_vars["rmin"], fit_vars["rmax"])
+        plot_chikr(
             dset, fit_vars["rmin"], fit_vars["rmax"], fit_vars["kmin"], fit_vars["kmax"]
         )
-        chikr_p.savefig("chikr.png", format="png")
 
 
 if __name__ == "__main__":
@@ -247,10 +209,9 @@ if __name__ == "__main__":
     matplotlib.use("Agg")
 
     prj_file = sys.argv[1]
-    structure_files = sys.argv[2].split(",")[:-1]  # Account for trailing ","
-    gds_file = sys.argv[3]
-    sp_file = sys.argv[4]
-    inputs = json.load(open(sys.argv[5], "r", encoding="utf-8"))
-    fit_vars = inputs["fit_vars"]
-    plot_graph = inputs["plot_graph"]
-    main(prj_file, structure_files, gds_file, sp_file, fit_vars, plot_graph)
+    gds_file = sys.argv[2]
+    sp_file = sys.argv[3]
+    input_values = json.load(open(sys.argv[4], "r", encoding="utf-8"))
+    fit_vars = input_values["fit_vars"]
+    plot_graph = input_values["plot_graph"]
+    main(prj_file, gds_file, sp_file, fit_vars, plot_graph)

@@ -20,7 +20,8 @@ def rename_cols(xafs_group: Group):
     return xafs_group
 
 
-def plot_normalised(plot_path: str, xafs_group: Group):
+def plot_edge_fits(plot_path: str, xafs_group: Group):
+    plt.figure()
     plt.plot(xafs_group.energy, xafs_group.pre_edge, "g", label="pre-edge")
     plt.plot(xafs_group.energy, xafs_group.post_edge, "r", label="post-edge")
     plt.plot(xafs_group.energy, xafs_group.mu, "b", label=xafs_group.filename)
@@ -32,9 +33,20 @@ def plot_normalised(plot_path: str, xafs_group: Group):
     plt.savefig(plot_path, format="png")
 
 
+def plot_flattened(plot_path: str, xafs_group: Group):
+    plt.figure()
+    plt.plot(xafs_group.energy, xafs_group.flat, label=xafs_group.filename)
+    plt.grid(color='r', linestyle=':', linewidth=1)
+    plt.xlabel('Energy (eV)')
+    plt.ylabel("normalised x$\mu$(E)")  # noqa: W605
+    plt.legend()
+    plt.savefig(plot_path, format="png")
+
+
 def main(dat_file: str, plot_graph: bool):
     prj_path = "out.prj"
-    plot_path = "out.png"
+    edge_plot_path = "edge.png"
+    flat_plot_path = "flat.png"
 
     xas_data: Group = read_ascii(dat_file)
     xas_data = rename_cols(xas_data)
@@ -43,7 +55,8 @@ def main(dat_file: str, plot_graph: bool):
     pre_edge(energy=xas_data.energy, mu=xas_data.mu, group=xas_data)
 
     if plot_graph:
-        plot_normalised(plot_path, xas_data)
+        plot_edge_fits(edge_plot_path, xas_data)
+        plot_flattened(flat_plot_path, xas_data)
 
     xas_project = create_athena(prj_path)
     xas_project.add_group(xas_data)

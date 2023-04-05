@@ -7,7 +7,7 @@ def read_csv_data(input_file, id_field='id'):
     fieldnames = []
     try:
         with open(input_file, encoding="utf8") as csvfile:
-            reader = csv.DictReader(csvfile)
+            reader = csv.DictReader(csvfile, skipinitialspace=True)
             for row in reader:  
                 if fieldnames == []:
                     fieldnames = list(row.keys())

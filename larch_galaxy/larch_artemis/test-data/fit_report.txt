@@ -13,7 +13,7 @@
    r-range            = 1\.400, 3\.000
    k-range            = 3\.000, 14\.000
    k window, dk       = 'hanning', 1\.000
-   paths used in fit  = \['test_feff/feff0001\.dat', 'test_feff/feff0002\.dat', 'test_feff/feff0003\.dat', 'test_feff/feff0004\.dat'\]
+   paths used in fit  = \['feff/feff0001\.dat', 'feff/feff0002\.dat', 'feff/feff0003\.dat', 'feff/feff0004\.dat'\]
    k-weight           = 2
    epsilon_k          = Array\(mean=5\.1913e-04, std=4\.5676e-04\)
    epsilon_r          = [\d\.]{10}
@@ -47,7 +47,7 @@
 
 \[\[Paths\]\]
  = Path 'S1' = Rh K Edge
-    feffdat file = test_feff/feff0001\.dat, from feff run 'test_feff'
+    feffdat file = feff/feff0001\.dat, from feff run 'feff'
     geometry  atom      x        y        z      ipot
               Rh       0\.0000,  0\.0000,  0\.0000  0 \(absorber\)
                C      -0\.7410,  0\.2885, -1\.7419  3
@@ -60,7 +60,7 @@
      sigma2 = [-\s][\d\.]{10} \+/- [\d\.]{10}  := 'ss'
 
  = Path 'S2' = Rh K Edge
-    feffdat file = test_feff/feff0002\.dat, from feff run 'test_feff'
+    feffdat file = feff/feff0002\.dat, from feff run 'feff'
     geometry  atom      x        y        z      ipot
               Rh       0\.0000,  0\.0000,  0\.0000  0 \(absorber\)
                C       1\.4414,  0\.4279,  1\.2965  3
@@ -73,7 +73,7 @@
      sigma2 = [-\s][\d\.]{10} \+/- [\d\.]{10}  := 'ss2'
 
  = Path 'S3' = Rh K Edge
-    feffdat file = test_feff/feff0003\.dat, from feff run 'test_feff'
+    feffdat file = feff/feff0003\.dat, from feff run 'feff'
     geometry  atom      x        y        z      ipot
               Rh       0\.0000,  0\.0000,  0\.0000  0 \(absorber\)
                C      -1\.6586, -0\.1094,  1\.2084  3
@@ -86,7 +86,7 @@
      sigma2 = [-\s][\d\.]{10}  := 'ss3'
 
  = Path 'Fe' = Rh K Edge
-    feffdat file = test_feff/feff0004\.dat, from feff run 'test_feff'
+    feffdat file = feff/feff0004\.dat, from feff run 'feff'
     geometry  atom      x        y        z      ipot
               Rh       0\.0000,  0\.0000,  0\.0000  0 \(absorber\)
                C       0\.6043, -2\.0001,  0\.0975  3

@@ -10,7 +10,7 @@
         <token name="@TOOL_CITATION@">10.1088/1742-6596/430/1/012007</token>
     </macros>
     <creator>
-        <person givenName="Patrick" familyName="Austin" url="https://github.com/patrick-austin"/>
+        <person givenName="Patrick" familyName="Austin" url="https://github.com/patrick-austin" identifier="https://orcid.org/0000-0002-6279-7823"/>
         <organization url="https://muon-spectroscopy-computational-project.github.io/index.html" name="The Muon Spectroscopy Computational Project"/>
     </creator>
     <requirements>
@@ -33,8 +33,8 @@
     </configfiles>
     <inputs>
         <conditional name="format">
-            <param name="format" type="select" value="feff" label="Structure file format">
-                <option value="feff">FEFF input</option>
+            <param name="format" type="select" display="radio" label="Structure file format">
+                <option value="feff" selected="true">FEFF input</option>
                 <option value="cif">CIF</option>
             </param>
             <when value="feff">
@@ -55,6 +55,42 @@
         </data>
     </outputs>
     <tests>
+        <!-- Test FEFF input -->
+        <test expect_num_outputs="2">
+            <conditional name="format">
+                <param name="format" value="feff"/>
+                <param name="structure_file" value="test.inp"/>
+            </conditional>
+            <output name="out_csv" file="[CSV_summary_of_test.inp].csv"/>
+            <output name="out_dir">
+                <assert_contents>
+                    <has_size value="276848" delta="10"/>
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test CIF input -->
+        <test expect_num_outputs="3">
+            <conditional name="format">
+                <param name="format" value="cif"/>
+                <param name="structure_file" value="1564889.cif"/>
+            </conditional>
+            <output name="feff_inp" file="[FEFF_input_of_1564889.cif].txt"/>
+            <output name="out_csv" file="[CSV_summary_of_1564889.cif].csv"/>
+            <output name="out_dir">
+                <assert_contents>
+                    <has_size value="85776" delta="10"/>
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test CIF input failure with low radius -->
+        <test expect_failure="true">
+            <conditional name="format">
+                <param name="format" value="cif"/>
+                <param name="structure_file" value="1564889.cif"/>
+                <param name="absorbing_atom" value="S"/>
+                <param name="radius" value="0.1"/>
+            </conditional>
+        </test>
     </tests>
     <help><![CDATA[
         Runs a FEFF6 calculation to find potential scattering paths in the provided structure.
@@ -66,5 +102,6 @@
     <citations>
         <citation type="doi">@TOOL_CITATION@</citation>
         <citation type="doi">10.1107/S0909049505012719</citation>
+        <citation type="doi">10.1016/j.commatsci.2012.10.028</citation>
     </citations>
 </tool>

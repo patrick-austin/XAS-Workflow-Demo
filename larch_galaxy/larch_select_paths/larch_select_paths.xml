@@ -10,7 +10,7 @@
         <token name="@TOOL_CITATION@">10.1088/1742-6596/430/1/012007</token>
     </macros>
     <creator>
-        <person givenName="Patrick" familyName="Austin" url="https://github.com/patrick-austin"/>
+        <person givenName="Patrick" familyName="Austin" url="https://github.com/patrick-austin" identifier="https://orcid.org/0000-0002-6279-7823"/>
         <organization url="https://muon-spectroscopy-computational-project.github.io/index.html" name="The Muon Spectroscopy Computational Project"/>
     </creator>
     <requirements>
@@ -19,7 +19,6 @@
         <!-- xraydb 4.5.0 is compatible with sqlalchemy 2, but is not yet available on condaforge so pin it -->
         <requirement type="package" version="4.4.7">xraydb</requirement>
         <requirement type="package" version="1.4.46">sqlalchemy</requirement>
-        <requirement type="package" version="2023.3.23">pymatgen</requirement>
     </requirements>
     <required_files>
         <include type="literal" path="larch_select_paths.py"/>
@@ -32,12 +31,12 @@
     </configfiles>
     <inputs>
         <param name="paths_file" type="data" format="csv" label="Paths file" help="CSV file detailing the possible scattering paths. Note that rows with '1' in the 'select' column will be selected with default values for their parameters automatically."/>
-        <repeat name="paths" title="Select paths" help="Identify paths to use in the fitting by their id, and define their parameters. Defaults can be used, but if custom values are needed define a new name and create an entry in Custom GDS variables.">
+        <repeat name="paths" title="Select paths" help="Identify paths to use in the fitting by their id, and define their fitting parameter names. Defaults can be used, but if custom values are needed define a new name and create an entry in Custom GDS variables.">
             <param name="id" type="integer" value="1" min="1" label="Path ID" help="Numerical id of a path to select, this appears at the end of the label and filename in the path summary CSV."/>
-            <param name="s02" type="text" value="amp" label="s02"/>
-            <param name="e0" type="text" value="enot" label="e0"/>
-            <param name="sigma2" type="text" optional="true" label="sigma2" help="If not set, will create a 'Custom GDS variable' with default values."/>
-            <param name="deltar" type="text" value="alpha*reff" label="deltar"/>
+            <param name="s02" type="text" value="amp" label="s02" help="The varaible name for the amplitude 's0 squared' (passive electron reduction factor) as it appears in the EXAFS equation. Default is 'amp'."/>
+            <param name="e0" type="text" value="enot" label="e0" help="The varaible name for the energy 'e0' (position of the absorption edge) as it appears in the EXAFS equation. Default is 'enot'."/>
+            <param name="sigma2" type="text" optional="true" label="sigma2" help="The variable name for 'sigma squared' (mean-square disorder in distance) as it appears in the EXAFS equation. By default (if left unset), each path will have a unique 'Custom GDS variable' 'name' with default 'value', 'expr' and 'vary' settings."/>
+            <param name="deltar" type="text" value="alpha*reff" label="deltar" help="The varaible name for 'delta r' (change in scattering path distance) as it appears in the EXAFS equation. Default is 'alpha*reff', where 'reff' is the path length used in the FEFF calculation."/>
         </repeat>
         <repeat name="gds" title="Custom GDS variables" help="Guess, Set, Define (GDS) variables for the selected paths.">
             <param name="name" type="text" label="Name" help="The name of the variable should match what is used in the Select paths section"/>
@@ -45,18 +44,18 @@
             <param name="expr" type="text" optional="true" label="Expression" help="If set, the variable will be 'Defined' by the expression. This can include other variable name, for example in order to set two paths to use the same variable."/>
             <param name="vary" type="boolean" checked="true" label="Vary" help="If True, the initial 'Guess' will be optimised in the fitting. If False, the value will be 'Set' instead and not optimised."/>
         </repeat>
-        <section name="amp" title="GDS default (amp)" help="Default value used for the s02 parameter for all paths. Changing this will affect all paths without a custom variable defined for 's02'.">
-            <param name="value" type="float" value="1.0" label="Value" help="The initial value for the variable."/>
+        <section name="amp" title="GDS default (amp)" help="Default value used for the 's02' variable 'amp' for all paths. Changing this will affect all paths without a custom variable defined for 's02'.">
+            <param name="value" type="float" value="1.0" min="0.0" max="1.0" label="Value" help="The initial value for the variable. This is typically between 0.7 and 1.0."/>
             <param name="expr" type="text" optional="true" label="Expression" help="If set, the variable will be 'Defined' by the expression. This can include other variable name, for example in order to set two paths to use the same variable."/>
             <param name="vary" type="boolean" checked="true" label="Vary" help="If True, the initial 'Guess' will be optimised in the fitting. If False, the value will be 'Set' instead and not optimised."/>
         </section>
-        <section name="enot" title="GDS default (enot)" help="Default value used for the e0 parameter for all paths. Changing this will affect all paths without a custom variable defined for 'e0'.">
-            <param name="value" type="float" value="1e-7" label="Value" help="The initial value for the variable."/>
+        <section name="enot" title="GDS default (enot)" help="Default value used for the 'e0' variable 'enot' for all paths. Changing this will affect all paths without a custom variable defined for 'e0'.">
+            <param name="value" type="float" value="1e-7" label="Value" help="The initial value for the variable. This should be close to zero, as it represents the difference in the absorption edge positions between simulation and experiment."/>
             <param name="expr" type="text" optional="true" label="Expression" help="If set, the variable will be 'Defined' by the expression. This can include other variable name, for example in order to set two paths to use the same variable."/>
             <param name="vary" type="boolean" checked="true" label="Vary" help="If True, the initial 'Guess' will be optimised in the fitting. If False, the value will be 'Set' instead and not optimised."/>
         </section>
-        <section name="alpha" title="GDS default (alpha)" help="Default value used for the deltar parameter for all paths. Changing this will affect all paths without a custom variable defined for 'deltar'.">
-            <param name="value" type="float" value="1e-7" label="Value" help="The initial value for the variable."/>
+        <section name="alpha" title="GDS default (alpha)" help="Default value used for the 'deltar' variable 'alpha' for all paths. Changing this will affect all paths without a custom variable defined for 'deltar'.">
+            <param name="value" type="float" value="1e-7" label="Value" help="The initial value for the variable. This should be close to zero, as it represents the difference in the FEFF path and fitted (experimental) path length."/>
             <param name="expr" type="text" optional="true" label="Expression" help="If set, the variable will be 'Defined' by the expression. This can include other variable name, for example in order to set two paths to use the same variable."/>
             <param name="vary" type="boolean" checked="true" label="Vary" help="If True, the initial 'Guess' will be optimised in the fitting. If False, the value will be 'Set' instead and not optimised."/>
         </section>
@@ -66,6 +65,60 @@
         <data name="sp_csv" format="csv" from_work_dir="sp.csv" label="Selected paths of ${paths_file.name}"/>
     </outputs>
     <tests>
+        <!-- Test defaults for CSV with selected rows -->
+        <test expect_num_outputs="2">
+            <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <output name="gds_csv" file="gds_default.csv"/>
+            <output name="sp_csv" file="sp_default.csv"/>
+        </test>
+        <!-- Test selected paths without custom GDS -->
+        <test expect_num_outputs="2">
+            <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <param name="id" value="3"/>
+            <output name="gds_csv" file="gds_include_path_3.csv"/>
+            <output name="sp_csv" file="sp_include_path_3.csv"/>
+        </test>
+        <!-- Test selected paths with custom name but no GDS entry -->
+        <test expect_num_outputs="2">
+            <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <param name="id" value="3"/>
+            <param name="sigma2" value="custom_name"/>
+            <output name="gds_csv" file="gds_include_path_3_custom_name.csv"/>
+            <output name="sp_csv" file="sp_include_path_3_custom_name.csv"/>
+        </test>
+        <!-- Test selected paths with custom GDS -->
+        <test expect_num_outputs="2">
+            <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <param name="id" value="3"/>
+            <param name="sigma2" value="custom_name"/>
+            <param name="name" value="custom_name"/>
+            <param name="value" value="0.005"/>
+            <param name="expr" value=""/>
+            <param name="vary" value="false"/>
+            <output name="gds_csv" file="gds_include_path_3_custom_name_value.csv"/>
+            <output name="sp_csv" file="sp_include_path_3_custom_name.csv"/>
+        </test>
+        <!-- Test changing default GDS values -->
+        <test expect_num_outputs="2">
+            <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <section name="amp">
+                <param name="value" value="0.1"/>
+                <param name="expr" value="enot"/>
+                <param name="vary" value="false"/>
+            </section>
+            <section name="enot">
+                <param name="value" value="0.1"/>
+                <param name="expr" value=""/>
+                <param name="vary" value="true"/>
+            </section>
+            <section name="alpha">
+                <param name="value" value="10"/>
+                <param name="expr" value=""/>
+                <param name="vary" value="false"/>
+            </section>
+            <output name="gds_csv" file="gds_altered_defaults.csv"/>
+            <output name="sp_csv" file="sp_default.csv"/>
+        </test>
     </tests>
     <help><![CDATA[
         Select FEFF scattering paths to use in the fitting process.

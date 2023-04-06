@@ -10,7 +10,7 @@
         <token name="@TOOL_CITATION@">10.1088/1742-6596/430/1/012007</token>
     </macros>
     <creator>
-        <person givenName="Patrick" familyName="Austin" url="https://github.com/patrick-austin"/>
+        <person givenName="Patrick" familyName="Austin" url="https://github.com/patrick-austin" identifier="https://orcid.org/0000-0002-6279-7823"/>
         <organization url="https://muon-spectroscopy-computational-project.github.io/index.html" name="The Muon Spectroscopy Computational Project"/>
     </creator>
     <requirements>
@@ -19,7 +19,6 @@
         <!-- xraydb 4.5.0 is compatible with sqlalchemy 2, but is not yet available on condaforge so pin it -->
         <requirement type="package" version="4.4.7">xraydb</requirement>
         <requirement type="package" version="1.4.46">sqlalchemy</requirement>
-        <requirement type="package" version="2023.3.23">pymatgen</requirement>
     </requirements>
     <required_files>
         <include type="glob" path="lib/*.py"/>
@@ -27,59 +26,109 @@
     </required_files>
     <command detect_errors="exit_code"><![CDATA[
         unzip '$feff_paths'
-        && python '${__tool_directory__}/larch_artemis.py' '$prj_file' '$gds_file' '$sp_file' '$inputs'
+        && mkdir report rmr chikr
+        && python '${__tool_directory__}/larch_artemis.py' '$execution.prj_file' '$gds_file' '$sp_file' '$inputs'
     ]]></command>
     <configfiles>
         <inputs name="inputs"/>
     </configfiles>
     <inputs>
-        <param name="prj_file" type="data" format="binary" label="Athena project file" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format."/>
-        <!-- TODO series execution mode -->
+        <conditional name="execution" >
+            <param name="execution" type="select" display="radio" label="Execution mode" help="Whether to execute Athena projects in parallel or in series.">
+                <option value="parallel" selected="true">Parallel</option>
+                <option value="series">Series</option>
+            </param>
+            <when value="parallel">
+                <param name="prj_file" type="data" format="binary" label="Athena project file" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format. If a collection of files is provided, these will be submitted and executed in parallel."/>
+            </when>
+            <when value="series">
+                <param name="prj_file" type="data" format="binary" multiple="true" label="Athena project file" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format. These will be submitted as a single job working in series, enabling early stopping criteria."/>
+                <param name="r_factor" type="float" min="0.0" optional="true" help="If set, execution of athena projects will stop if the r_factor of the fitting goes above this threshold."/>
+            </when>
+        </conditional>
         <param name="feff_paths" type="data" format="zip" label="FEFF paths file" help="Zipped directory of the FEFF paths."/>
         <param name="gds_file" type="data" format="csv" label="GDS parameters file" help="File defining the fitting parameters as a `guess` (to be varied in the fit), `def` (defined by an expression evaluated throughout fitting) or `set` (evaluated at the start of fitting, then left unchanged)."/>
         <param name="sp_file" type="data" format="csv" label="SP parameters file" help="File defining the scattering paths."/>
-        <!-- TODO help text and sensible types, limits etc. -->
         <section name="fit_vars" title="Fitting Variables">
-            <param argument="fitspace" type="text" value="r"/>
-            <param argument="kmin" type="integer" value="3"/>
-            <param argument="kmax" type="integer" value="14"/>
-            <param argument="kw" type="integer" value="2"/>
-            <param argument="dk" type="integer" value="1"/>
-            <param argument="window" type="text" value="hanning"/>
-            <param argument="rmin" type="float" value="1.4"/>
-            <param argument="rmax" type="float" value="3.0"/>
+            <param argument="fitspace" type="select" help="Space in which the fitting is performed.">
+                <option value="r" selected="true">Real</option>
+                <option value="k">Unfiltered k-space</option>
+                <option value="q">Filtered k-space</option>
+                <option value="w">Wavelet transform</option>
+            </param>
+            <param argument="kmin" type="float" value="0" min="0.0" help="Minimum k value to fit to."/>
+            <param argument="kmax" type="float" value="20" min="0.0" help="Minimum k value to fit to."/>
+            <param argument="kweight" type="float" value="2" help="Exponent for weighting spectra by raising k to this power."/>
+            <param argument="dk" type="float" value="4" help="Tapering parameter for Fourier Transform window."/>
+            <param argument="window" type="select" help="Fourier Transform window type.">
+                <option value="hanning">Hanning (cosine-squared taper)</option>
+                <option value="parzen">Parzen (linear taper)</option>
+                <option value="welch">Welch (quadratic taper)</option>
+                <option value="gaussian">Gaussian function window</option>
+                <option value="sine">Sine function window</option>
+                <option value="kaiser" selected="true">Kaiser-Bessel function-derived window</option>
+            </param>
+            <param argument="rmin" type="float" value="0.0" min="0.0" help="Minimum radial distance to fit to."/>
+            <param argument="rmax" type="float" value="10.0" min="0.0" help="Maximum radial distance to fit to."/>
         </section>
         <param name="plot_graph" type="boolean" label="Plot graph" help="Whether to plot the data."/>
     </inputs>
     <outputs>
-        <data name="fit_report" format="txt" from_work_dir="fit_report.txt" label="Fit report of ${prj_file.name}"/>
-        <data name="rmr" format="png" from_work_dir="rmr.png" label="RMR plot of ${prj_file.name}">
-            <filter>plot_graph</filter>
+        <data name="fit_report" format="txt" from_work_dir="report/fit_report.txt" label="Fit report of ${execution.prj_file.name}">
+            <filter>execution["execution"]=="parallel"</filter>
         </data>
-        <data name="chikr" format="png" from_work_dir="chikr.png" label="ChiKR plot of ${prj_file.name}">
-            <filter>plot_graph</filter>
+        <data name="rmr" format="png" from_work_dir="rmr/rmr.png" label="RMR plot of ${execution.prj_file.name}">
+            <filter>execution["execution"]=="parallel" and plot_graph</filter>
         </data>
+        <data name="chikr" format="png" from_work_dir="chikr/chikr.png" label="ChiKR plot of ${execution.prj_file.name}">
+            <filter>execution["execution"]=="parallel" and plot_graph</filter>
+        </data>
+        <collection name="fit_report_collection" format="txt" type="list" label="Fit report of ${execution.prj_file[0].name}...">
+            <discover_datasets pattern="__name_and_ext__" directory="report"/>
+            <filter>execution["execution"]=="series"</filter>
+        </collection>
+        <collection name="rmr_collection" format="png" type="list" label="RMR plot of ${execution.prj_file[0].name}...">
+            <discover_datasets pattern="__name_and_ext__" directory="rmr"/>
+            <filter>execution["execution"]=="series" and plot_graph</filter>
+        </collection>
+        <collection name="chikr_collection" format="png" type="list" label="ChiKR plot of ${execution.prj_file[0].name}...">
+            <discover_datasets pattern="__name_and_ext__" directory="chikr"/>
+            <filter>execution["execution"]=="series" and plot_graph</filter>
+        </collection>
     </outputs>
     <tests>
-        <!-- <test expect_num_outputs="1">
+        <!-- Parallel, no plot -->
+        <test expect_num_outputs="1">
             <param name="prj_file" value="test.prj"/>
-            <param name="structure_files" value="test.inp"/>
+            <param name="feff_paths" value="[FEFF_paths_of_test.inp].zip"/>
             <param name="gds_file" value="gds.csv"/>
             <param name="sp_file" value="sp.csv"/>
+            <param name="fitspace" value="r"/>
+            <param name="kmin" value="3"/>
+            <param name="kmax" value="14"/>
+            <param name="kweight" value="2"/>
+            <param name="dk" value="1"/>
+            <param name="window" value="hanning"/>
+            <param name="rmin" value="1.4"/>
+            <param name="rmax" value="3.0"/>
             <output name="fit_report" file="fit_report.txt" compare="re_match"/>
         </test>
-        <test expect_num_outputs="4">
+        <!-- Parallel, plot -->
+        <test expect_num_outputs="3">
             <param name="prj_file" value="test.prj"/>
-            <param name="structure_files" value="test.inp"/>
+            <param name="feff_paths" value="[FEFF_paths_of_test.inp].zip"/>
             <param name="gds_file" value="gds.csv"/>
             <param name="sp_file" value="sp.csv"/>
+            <param name="fitspace" value="r"/>
+            <param name="kmin" value="3"/>
+            <param name="kmax" value="14"/>
+            <param name="kweight" value="2"/>
+            <param name="dk" value="1"/>
+            <param name="window" value="hanning"/>
+            <param name="rmin" value="1.4"/>
+            <param name="rmax" value="3.0"/>
             <param name="plot_graph" value="true"/>
             <output name="fit_report" file="fit_report.txt" compare="re_match"/>
-            <output name="norm">
-                <assert_contents>
-                    <has_size value="43900" delta="100"/>
-                </assert_contents>
-            </output>
             <output name="rmr">
                 <assert_contents>
                     <has_size value="53500" delta="100"/>
@@ -90,7 +139,62 @@
                     <has_size value="76000" delta="100"/>
                 </assert_contents>
             </output>
-        </test> -->
+        </test>
+        <!-- Series, no plot -->
+        <test expect_num_outputs="1">
+            <param name="execution" value="series"/>
+            <param name="prj_file" value="test.prj,test.prj"/>
+            <param name="feff_paths" value="[FEFF_paths_of_test.inp].zip"/>
+            <param name="gds_file" value="gds.csv"/>
+            <param name="sp_file" value="sp.csv"/>
+            <param name="fitspace" value="r"/>
+            <param name="kmin" value="3"/>
+            <param name="kmax" value="14"/>
+            <param name="kweight" value="2"/>
+            <param name="dk" value="1"/>
+            <param name="window" value="hanning"/>
+            <param name="rmin" value="1.4"/>
+            <param name="rmax" value="3.0"/>
+            <output_collection name="fit_report_collection" type="list" count="2"/>
+        </test>
+        <!-- Series, plot -->
+        <test expect_num_outputs="3">
+            <param name="execution" value="series"/>
+            <param name="prj_file" value="test.prj"/>
+            <param name="feff_paths" value="[FEFF_paths_of_test.inp].zip"/>
+            <param name="gds_file" value="gds.csv"/>
+            <param name="sp_file" value="sp.csv"/>
+            <param name="fitspace" value="r"/>
+            <param name="kmin" value="3"/>
+            <param name="kmax" value="14"/>
+            <param name="kweight" value="2"/>
+            <param name="dk" value="1"/>
+            <param name="window" value="hanning"/>
+            <param name="rmin" value="1.4"/>
+            <param name="rmax" value="3.0"/>
+            <param name="plot_graph" value="true"/>
+            <output_collection name="fit_report_collection" type="list" count="1"/>
+            <output_collection name="rmr_collection" type="list" count="1"/>
+            <output_collection name="chikr_collection" type="list" count="1"/>
+        </test>
+        <!-- Series, early stopping -->
+        <test expect_num_outputs="1">
+            <param name="execution" value="series"/>
+            <param name="prj_file" value="test.prj,test.prj"/>
+            <param name="r_factor" value="0.01"/>
+            <param name="feff_paths" value="[FEFF_paths_of_test.inp].zip"/>
+            <param name="gds_file" value="gds.csv"/>
+            <param name="sp_file" value="sp.csv"/>
+            <param name="fitspace" value="r"/>
+            <param name="kmin" value="3"/>
+            <param name="kmax" value="14"/>
+            <param name="kweight" value="2"/>
+            <param name="dk" value="1"/>
+            <param name="window" value="hanning"/>
+            <param name="rmin" value="1.4"/>
+            <param name="rmax" value="3.0"/>
+            <output_collection name="fit_report_collection" type="list" count="1"/>
+        </test>
     </tests>
     <help><![CDATA[
         Using Larch, perform fitting on an Athena project file, originally from the input X-ray Absorption Fine Structure (XAFS) data file.

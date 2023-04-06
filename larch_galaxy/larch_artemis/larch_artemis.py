@@ -80,7 +80,7 @@ def dict_to_gds(data_dict, session):
     return dgs_group
 
 
-def plot_rmr(data_set, rmin, rmax):
+def plot_rmr(path: str, data_set, rmin, rmax):
     plt.figure()
     plt.plot(data_set.data.r, data_set.data.chir_mag, color="b")
     plt.plot(data_set.data.r, data_set.data.chir_re, color="b", label="expt.")
@@ -93,10 +93,10 @@ def plot_rmr(data_set, rmin, rmax):
     plt.fill([rmin, rmin, rmax, rmax], [-rmax, rmax, rmax, -rmax], color="g", alpha=0.1)
     plt.text(rmax - 0.65, -rmax + 0.5, "fit range")
     plt.legend()
-    plt.savefig("rmr.png", format="png")
+    plt.savefig(path, format="png")
 
 
-def plot_chikr(data_set, rmin, rmax, kmin, kmax):
+def plot_chikr(path: str, data_set, rmin, rmax, kmin, kmax):
     fig = plt.figure(figsize=(16, 4))
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122)
@@ -129,7 +129,7 @@ def plot_chikr(data_set, rmin, rmax, kmin, kmax):
 
     ax2.fill([rmin, rmin, rmax, rmax], [-rmax, rmax, rmax, -rmax], color="g", alpha=0.1)
     ax2.text(rmax - 0.65, -rmax + 0.5, "fit range")
-    fig.savefig("chikr.png", format="png")
+    fig.savefig(path, format="png")
 
 
 def read_gds(gds_file, session):
@@ -161,7 +161,7 @@ def run_fit(data_group, gds, selected_paths, fv, session):
         fitspace=fv["fitspace"],
         kmin=fv["kmin"],
         kmax=fv["kmax"],
-        kw=fv["kw"],
+        kweight=fv["kweight"],
         dk=fv["dk"],
         window=fv["window"],
         rmin=fv["rmin"],
@@ -174,7 +174,7 @@ def run_fit(data_group, gds, selected_paths, fv, session):
     )
 
     out = feffit(gds, dset, _larch=session)
-    return trans, dset, out
+    return dset, out
 
 
 def main(
@@ -183,7 +183,12 @@ def main(
     sp_file: str,
     fit_vars: dict,
     plot_graph: bool,
-):
+    series_id: str = "",
+) -> float:
+    report_path = f"report/fit_report{series_id}.txt"
+    rmr_path = f"rmr/rmr{series_id}.png"
+    chikr_path = f"chikr/chikr{series_id}.png"
+
     session = Interpreter()
     athena_project = read_athena(prj_file)
     athena_groups = get_groups(athena_project=athena_project)
@@ -191,17 +196,24 @@ def main(
 
     gds = read_gds(gds_file, session)
     selected_paths = read_selected_paths_list(sp_file, session)
-    trans, dset, out = run_fit(data_group, gds, selected_paths, fit_vars, session)
+    dset, out = run_fit(data_group, gds, selected_paths, fit_vars, session)
 
     fit_report = feffit_report(out, _larch=session)
-    with open("fit_report.txt", "w") as fit_report_file:
+    with open(report_path, "w") as fit_report_file:
         fit_report_file.write(fit_report)
 
     if plot_graph:
-        plot_rmr(dset, fit_vars["rmin"], fit_vars["rmax"])
+        plot_rmr(rmr_path, dset, fit_vars["rmin"], fit_vars["rmax"])
         plot_chikr(
-            dset, fit_vars["rmin"], fit_vars["rmax"], fit_vars["kmin"], fit_vars["kmax"]
+            chikr_path,
+            dset,
+            fit_vars["rmin"],
+            fit_vars["rmax"],
+            fit_vars["kmin"],
+            fit_vars["kmax"],
         )
+
+    return out.rfactor
 
 
 if __name__ == "__main__":
@@ -214,4 +226,23 @@ if __name__ == "__main__":
     input_values = json.load(open(sys.argv[4], "r", encoding="utf-8"))
     fit_vars = input_values["fit_vars"]
     plot_graph = input_values["plot_graph"]
-    main(prj_file, gds_file, sp_file, fit_vars, plot_graph)
+
+    if input_values["execution"]["execution"] == "series":
+        r_factor_threshold = input_values["execution"]["r_factor"]
+        prj_files = prj_file.split(",")
+        id_length = len(str(len(prj_files)))
+        for series_index, series_file in enumerate(prj_files):
+            print(f"Fitting project {series_file}")
+            series_id = str(series_index).zfill(id_length)
+            r_factor = main(
+                series_file, gds_file, sp_file, fit_vars, plot_graph, "_" + series_id
+            )
+            print(f"r_factor was {r_factor}")
+            if r_factor_threshold and r_factor > r_factor_threshold:
+                print(
+                    "WARNING: Stopping series fit after project "
+                    f"{series_id} as {r_factor} > {r_factor_threshold}"
+                )
+                break
+    else:
+        main(prj_file, gds_file, sp_file, fit_vars, plot_graph)

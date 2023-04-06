@@ -19,13 +19,13 @@ def write_selected_path(
     row: "list[str]",
     s02: str = AMP,
     e0: str = ENOT,
-    sigma2: str = None,
+    sigma2: str = "",
     deltar: str = ALPHA_REFF,
 ):
     global SP_ROW_ID
     filename = row[0].strip()
     label = row[-2].strip()
-    if sigma2 is None:
+    if not sigma2:
         sigma2 = "s" + label.replace(".", "").lower()
         write_gds(sigma2)
     SP_DATA.append(
@@ -71,7 +71,7 @@ def main(
                 s02 = path_value["s02"]
                 e0 = path_value["e0"]
                 sigma2 = path_value["sigma2"]
-                if sigma2 not in gds_names:
+                if sigma2 and sigma2 not in gds_names:
                     write_gds(sigma2)
                 deltar = path_value["deltar"]
                 write_selected_path(row, s02, e0, sigma2, deltar)

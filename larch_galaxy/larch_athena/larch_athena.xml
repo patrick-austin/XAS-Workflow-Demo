@@ -10,7 +10,7 @@
         <token name="@TOOL_CITATION@">10.1088/1742-6596/430/1/012007</token>
     </macros>
     <creator>
-        <person givenName="Patrick" familyName="Austin" url="https://github.com/patrick-austin"/>
+        <person givenName="Patrick" familyName="Austin" url="https://github.com/patrick-austin" identifier="https://orcid.org/0000-0002-6279-7823"/>
         <organization url="https://muon-spectroscopy-computational-project.github.io/index.html" name="The Muon Spectroscopy Computational Project"/>
     </creator>
     <requirements>
@@ -40,7 +40,7 @@
         </data>
     </outputs>
     <tests>
-        <!-- <test expect_num_outputs="1">
+        <test expect_num_outputs="1">
             <param name="dat_file" value="test.xmu"/>
             <output name="athena_project_file">
                 <assert_contents>
@@ -48,7 +48,7 @@
                 </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="2">
+        <test expect_num_outputs="3">
             <param name="dat_file" value="test.xmu"/>
             <param name="plot_graph" value="true"/>
             <output name="athena_project_file">
@@ -56,12 +56,17 @@
                     <has_size value="5366" delta="10"/>
                 </assert_contents>
             </output>
-            <output name="plot">
+            <output name="edge_plot">
                 <assert_contents>
                     <has_size value="53887" delta="20"/>
                 </assert_contents>
             </output>
-        </test> -->
+            <output name="flat_plot">
+                <assert_contents>
+                    <has_size value="40606" delta="20"/>
+                </assert_contents>
+            </output>
+        </test>
     </tests>
     <help><![CDATA[
         Using Larch, create an Athena project file from the input X-ray Absorption Fine Structure (XAFS) data file. This renames the `xmu` column of the data to `mu`.

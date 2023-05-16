@@ -1,5 +1,6 @@
 import csv
 import json
+import re
 import sys
 
 
@@ -46,6 +47,7 @@ def write_gds(name: str, value: float = 0.003, expr: str = None, vary: bool = Tr
 
 def main(
     paths_file: str,
+    select_all: bool,
     path_values: list,
     amp_values: dict,
     enot_values: dict,
@@ -63,20 +65,21 @@ def main(
 
     with open(paths_file) as file:
         reader = csv.reader(file)
-        for path_id, row in enumerate(reader):
-            if path_id == 0:
-                continue
-            elif path_id in path_values_ids:
-                path_value = path_values[path_values_ids.index(path_id)]
-                s02 = path_value["s02"]
-                e0 = path_value["e0"]
-                sigma2 = path_value["sigma2"]
-                if sigma2 and sigma2 not in gds_names:
-                    write_gds(sigma2)
-                deltar = path_value["deltar"]
-                write_selected_path(row, s02, e0, sigma2, deltar)
-            elif int(row[-1]):
-                write_selected_path(row)
+        for row in reader:
+            id_match = re.search(r"\d+", row[0])
+            if id_match:
+                path_id = int(id_match.group())
+                if path_id in path_values_ids:
+                    path_value = path_values[path_values_ids.index(path_id)]
+                    s02 = path_value["s02"]
+                    e0 = path_value["e0"]
+                    sigma2 = path_value["sigma2"]
+                    if sigma2 and sigma2 not in gds_names:
+                        write_gds(sigma2)
+                    deltar = path_value["deltar"]
+                    write_selected_path(row, s02, e0, sigma2, deltar)
+                elif select_all or int(row[-1]):
+                    write_selected_path(row)
 
     with open("sp.csv", "w") as out:
         out.writelines(SP_DATA)
@@ -88,9 +91,9 @@ def main(
 if __name__ == "__main__":
     paths_file = sys.argv[1]
     input_values = json.load(open(sys.argv[2], "r", encoding="utf-8"))
-    print(input_values)
     main(
         paths_file,
+        input_values["select_all"],
         input_values["paths"],
         input_values["amp"],
         input_values["enot"],

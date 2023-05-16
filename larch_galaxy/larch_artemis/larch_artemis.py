@@ -156,7 +156,7 @@ def read_selected_paths_list(file_name, session):
 
 
 def run_fit(data_group, gds, selected_paths, fv, session):
-    # create the transform grup (prepare the fit space).
+    # create the transform group (prepare the fit space).
     trans = TransformGroup(
         fitspace=fv["fitspace"],
         kmin=fv["kmin"],
@@ -184,7 +184,7 @@ def main(
     fit_vars: dict,
     plot_graph: bool,
     series_id: str = "",
-) -> float:
+) -> Group:
     report_path = f"report/fit_report{series_id}.txt"
     rmr_path = f"rmr/rmr{series_id}.png"
     chikr_path = f"chikr/chikr{series_id}.png"
@@ -212,8 +212,80 @@ def main(
             fit_vars["kmin"],
             fit_vars["kmax"],
         )
+    return out
 
-    return out.rfactor
+
+def check_threshold(
+    series_id: str,
+    threshold: float,
+    variable: str,
+    value: float,
+    early_stopping: bool = False,
+):
+    if abs(value) > threshold:
+        if early_stopping:
+            message = (
+                "WARNING: Stopping series fit after project "
+                f"{series_id} as {variable} > {threshold}"
+            )
+        else:
+            message = f"WARNING: Project {series_id} has {variable} > {threshold}"
+
+        print(message)
+        return early_stopping
+
+    return False
+
+
+def series_execution(
+    prj_file: str,
+    gds_file: str,
+    sp_file: str,
+    fit_vars: dict,
+    plot_graph: bool,
+) -> "list[list[str]]":
+    report_criteria = input_values["execution"]["report_criteria"]
+    prj_files = prj_file.split(",")
+    id_length = len(str(len(prj_files)))
+    stop = False
+    rows = [[f"{c['variable']:>12s}" for c in report_criteria]]
+    for series_index, series_file in enumerate(prj_files):
+        print(f"Fitting project {series_file}")
+        series_id = str(series_index).zfill(id_length)
+        out = main(
+            series_file, gds_file, sp_file, fit_vars, plot_graph, f"_{series_id}"
+        )
+        row = []
+        for criterium in report_criteria:
+            action = criterium["action"]["action"]
+            variable = criterium["variable"]
+            try:
+                value = out.__getattribute__(variable)
+            except AttributeError:
+                value = out.params[variable].value
+
+            row.append(f"{value:>12f}")
+            if action == "stop":
+                stop = check_threshold(
+                    series_id,
+                    criterium["action"]["threshold"],
+                    variable,
+                    value,
+                    True,
+                )
+            elif action == "warn":
+                check_threshold(
+                    series_id,
+                    criterium["action"]["threshold"],
+                    variable,
+                    value,
+                    False,
+                )
+
+        rows.append(row)
+        if stop:
+            break
+    return rows
 
 
 if __name__ == "__main__":
@@ -228,21 +300,13 @@ if __name__ == "__main__":
     plot_graph = input_values["plot_graph"]
 
     if input_values["execution"]["execution"] == "series":
-        r_factor_threshold = input_values["execution"]["r_factor"]
-        prj_files = prj_file.split(",")
-        id_length = len(str(len(prj_files)))
-        for series_index, series_file in enumerate(prj_files):
-            print(f"Fitting project {series_file}")
-            series_id = str(series_index).zfill(id_length)
-            r_factor = main(
-                series_file, gds_file, sp_file, fit_vars, plot_graph, "_" + series_id
-            )
-            print(f"r_factor was {r_factor}")
-            if r_factor_threshold and r_factor > r_factor_threshold:
-                print(
-                    "WARNING: Stopping series fit after project "
-                    f"{series_id} as {r_factor} > {r_factor_threshold}"
-                )
-                break
+        rows = series_execution(
+            prj_file, gds_file, sp_file, input_values, fit_vars, plot_graph
+        )
+        if len(rows[0]) > 0:
+            with open("criteria_report.csv", "w") as f:
+                writer = csv.writer(f)
+                writer.writerows(rows)
+
     else:
         main(prj_file, gds_file, sp_file, fit_vars, plot_graph)

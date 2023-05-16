@@ -1,6 +1,9 @@
+import gc
+import os
 import sys
+from zipfile import ZipFile
 
-from larch.io import create_athena, read_ascii
+from larch.io import create_athena, read_ascii, set_array_labels
 from larch.symboltable import Group
 from larch.utils import group2dict, dict2group
 from larch.xafs import pre_edge
@@ -10,14 +13,20 @@ import matplotlib.pyplot as plt
 
 
 def rename_cols(xafs_group: Group):
-    mu_e = xafs_group.xmu
-    # get a dictionary from te group
-    xafs_dict = group2dict(xafs_group)
-    # add mu and energy to the dictionary
-    xafs_dict["mu"] = mu_e
-    print(f"XAFS data keys: {xafs_dict.keys()}")
-    xafs_group = dict2group(xafs_dict)
-    return xafs_group
+    labels = xafs_group.array_labels
+    new_labels = []
+    for label in labels:
+        if label == "col1":
+            new_labels.append("energy")
+        elif label == "col2" or label == "xmu":
+            new_labels.append("mu")
+        else:
+            new_labels.append(label)
+
+    if new_labels != labels:
+        return set_array_labels(xafs_group, new_labels)
+    else:
+        return xafs_group
 
 
 def plot_edge_fits(plot_path: str, xafs_group: Group):
@@ -31,23 +40,27 @@ def plot_edge_fits(plot_path: str, xafs_group: Group):
     plt.title("pre-edge and post_edge fitting to $\mu$")  # noqa: W605
     plt.legend()
     plt.savefig(plot_path, format="png")
+    plt.close("all")
 
 
 def plot_flattened(plot_path: str, xafs_group: Group):
     plt.figure()
     plt.plot(xafs_group.energy, xafs_group.flat, label=xafs_group.filename)
-    plt.grid(color='r', linestyle=':', linewidth=1)
-    plt.xlabel('Energy (eV)')
+    plt.grid(color="r", linestyle=":", linewidth=1)
+    plt.xlabel("Energy (eV)")
     plt.ylabel("normalised x$\mu$(E)")  # noqa: W605
     plt.legend()
     plt.savefig(plot_path, format="png")
+    plt.close("all")
 
 
-def main(dat_file: str, plot_graph: bool):
-    prj_path = "out.prj"
-    edge_plot_path = "edge.png"
-    flat_plot_path = "flat.png"
-
+def main(
+    dat_file: str,
+    plot_graph: bool,
+    prj_path: str = "out.prj",
+    edge_plot_path: str = "edge.png",
+    flat_plot_path: str = "flat.png",
+):
     xas_data: Group = read_ascii(dat_file)
     xas_data = rename_cols(xas_data)
     xas_data.filename = prj_path
@@ -62,6 +75,9 @@ def main(dat_file: str, plot_graph: bool):
     xas_project.add_group(xas_data)
     xas_project.save()
 
+    # Ensure that we do not run out of memory when running on large zips
+    gc.collect()
+
 
 if __name__ == "__main__":
     # larch imports set this to an interactive backend, so need to change it
@@ -69,4 +85,19 @@ if __name__ == "__main__":
 
     dat_file = sys.argv[1]
     plot_graph = sys.argv[2] == "true"
-    main(dat_file, plot_graph)
+    extension = sys.argv[3]
+    if extension == "zip":
+        i = 0
+        ZipFile(dat_file).extractall("dat_files")
+        for dirpath, _, filenames in os.walk("dat_files"):
+            for filename in filenames:
+                main(
+                    os.path.join(dirpath, filename),
+                    plot_graph,
+                    f"out/{i}.binary",
+                    f"edge/{i}.png",
+                    f"flat/{i}.png",
+                )
+                i += 1
+    else:
+        main(dat_file, plot_graph)

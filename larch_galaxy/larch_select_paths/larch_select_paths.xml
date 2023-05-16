@@ -31,6 +31,7 @@
     </configfiles>
     <inputs>
         <param name="paths_file" type="data" format="csv" label="Paths file" help="CSV file detailing the possible scattering paths. Note that rows with '1' in the 'select' column will be selected with default values for their parameters automatically."/>
+        <param name="select_all" type="boolean" checked="true" label="Select all" help="All paths will be selected, with default values used unless specified manually below."/>
         <repeat name="paths" title="Select paths" help="Identify paths to use in the fitting by their id, and define their fitting parameter names. Defaults can be used, but if custom values are needed define a new name and create an entry in Custom GDS variables.">
             <param name="id" type="integer" value="1" min="1" label="Path ID" help="Numerical id of a path to select, this appears at the end of the label and filename in the path summary CSV."/>
             <param name="s02" type="text" value="amp" label="s02" help="The varaible name for the amplitude 's0 squared' (passive electron reduction factor) as it appears in the EXAFS equation. Default is 'amp'."/>
@@ -65,15 +66,23 @@
         <data name="sp_csv" format="csv" from_work_dir="sp.csv" label="Selected paths of ${paths_file.name}"/>
     </outputs>
     <tests>
-        <!-- Test defaults for CSV with selected rows -->
+        <!-- Test defaults for CSV with select_all -->
         <test expect_num_outputs="2">
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
             <output name="gds_csv" file="gds_default.csv"/>
             <output name="sp_csv" file="sp_default.csv"/>
         </test>
+        <!-- Test defaults for CSV with some selected rows -->
+        <test expect_num_outputs="2">
+            <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <param name="select_all" value="false"/>
+            <output name="gds_csv" file="gds_select_all_false.csv"/>
+            <output name="sp_csv" file="sp_select_all_false.csv"/>
+        </test>
         <!-- Test selected paths without custom GDS -->
         <test expect_num_outputs="2">
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <param name="select_all" value="false"/>
             <param name="id" value="3"/>
             <output name="gds_csv" file="gds_include_path_3.csv"/>
             <output name="sp_csv" file="sp_include_path_3.csv"/>
@@ -81,6 +90,7 @@
         <!-- Test selected paths with custom name but no GDS entry -->
         <test expect_num_outputs="2">
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <param name="select_all" value="false"/>
             <param name="id" value="3"/>
             <param name="sigma2" value="custom_name"/>
             <output name="gds_csv" file="gds_include_path_3_custom_name.csv"/>
@@ -89,6 +99,7 @@
         <!-- Test selected paths with custom GDS -->
         <test expect_num_outputs="2">
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <param name="select_all" value="false"/>
             <param name="id" value="3"/>
             <param name="sigma2" value="custom_name"/>
             <param name="name" value="custom_name"/>
@@ -101,6 +112,7 @@
         <!-- Test changing default GDS values -->
         <test expect_num_outputs="2">
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            <param name="select_all" value="false"/>
             <section name="amp">
                 <param name="value" value="0.1"/>
                 <param name="expr" value="enot"/>
@@ -117,13 +129,13 @@
                 <param name="vary" value="false"/>
             </section>
             <output name="gds_csv" file="gds_altered_defaults.csv"/>
-            <output name="sp_csv" file="sp_default.csv"/>
+            <output name="sp_csv" file="sp_select_all_false.csv"/>
         </test>
     </tests>
     <help><![CDATA[
         Select FEFF scattering paths to use in the fitting process.
 
-        Rows in the CSV with ``select`` set to ``1`` will be automatically used, with the default values shown here.
+        If "Select all" is checked, or an individual row in the CSV with ``select`` is set to ``1``, it will be automatically used, with the default values shown here.
         This can be useful when many paths are needed and using the UI can be cumbersome.
 
         It is also possible to manually check and further modify the GDS and SP output CSVs to ensure the values are suitable, as an alternative to re-running this tool.

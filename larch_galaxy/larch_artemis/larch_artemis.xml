@@ -21,7 +21,6 @@
         <requirement type="package" version="1.4.46">sqlalchemy</requirement>
     </requirements>
     <required_files>
-        <include type="glob" path="lib/*.py"/>
         <include type="literal" path="larch_artemis.py"/>
     </required_files>
     <command detect_errors="exit_code"><![CDATA[
@@ -43,7 +42,23 @@
             </when>
             <when value="series">
                 <param name="prj_file" type="data" format="binary" multiple="true" label="Athena project file" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format. These will be submitted as a single job working in series, enabling early stopping criteria."/>
-                <param name="r_factor" type="float" min="0.0" optional="true" help="If set, execution of athena projects will stop if the r_factor of the fitting goes above this threshold."/>
+                <repeat name="report_criteria" title="Report Criteria">
+                    <param name="variable" type="text" label="Variable" help="Name of the variable of that appears in the statistics or variables sections of the report."/>
+                    <conditional name="action">
+                        <param name="action" type="select" display="radio" label="Action" help="What to do with the named variable.">
+                            <option value="log" selected="true">Log</option>
+                            <option value="warn">Warn</option>
+                            <option value="stop">Early stopping</option>
+                        </param>
+                        <when value="log"/>
+                        <when value="warn">
+                            <param name="threshold" type="float" value="0.0" min="0.0" label="Warning threshold" help="In addition to logging, a warning will be printed if the absolute value of this variable goes above this threshold."/>
+                        </when>
+                        <when value="stop">
+                            <param name="threshold" type="float" value="0.0" min="0.0" label="Early stopping threshold" help="In addition to logging, execution will stop if the absolute value of this variable goes above this threshold."/>
+                        </when>
+                    </conditional>
+                </repeat>
             </when>
         </conditional>
         <param name="feff_paths" type="data" format="zip" label="FEFF paths file" help="Zipped directory of the FEFF paths."/>
@@ -78,10 +93,12 @@
             <filter>execution["execution"]=="parallel"</filter>
         </data>
         <data name="rmr" format="png" from_work_dir="rmr/rmr.png" label="RMR plot of ${execution.prj_file.name}">
-            <filter>execution["execution"]=="parallel" and plot_graph</filter>
+            <filter>execution["execution"]=="parallel"</filter>
+            <filter>plot_graph</filter>
         </data>
         <data name="chikr" format="png" from_work_dir="chikr/chikr.png" label="ChiKR plot of ${execution.prj_file.name}">
-            <filter>execution["execution"]=="parallel" and plot_graph</filter>
+            <filter>execution["execution"]=="parallel"</filter>
+            <filter>plot_graph</filter>
         </data>
         <collection name="fit_report_collection" format="txt" type="list" label="Fit report of ${execution.prj_file[0].name}...">
             <discover_datasets pattern="__name_and_ext__" directory="report"/>
@@ -89,12 +106,18 @@
         </collection>
         <collection name="rmr_collection" format="png" type="list" label="RMR plot of ${execution.prj_file[0].name}...">
             <discover_datasets pattern="__name_and_ext__" directory="rmr"/>
-            <filter>execution["execution"]=="series" and plot_graph</filter>
+            <filter>execution["execution"]=="series"</filter>
+            <filter>plot_graph</filter>
         </collection>
         <collection name="chikr_collection" format="png" type="list" label="ChiKR plot of ${execution.prj_file[0].name}...">
             <discover_datasets pattern="__name_and_ext__" directory="chikr"/>
-            <filter>execution["execution"]=="series" and plot_graph</filter>
+            <filter>execution["execution"]=="series"</filter>
+            <filter>plot_graph</filter>
         </collection>
+        <data name="criteria_report" format="csv" from_work_dir="criteria_report.csv" label="Selected criteria from ${execution.prj_file[0].name}...">
+            <filter>execution["execution"]=="series"</filter>
+            <filter>len(execution["report_criteria"])>0</filter>
+        </data>
     </outputs>
     <tests>
         <!-- Parallel, no plot -->
@@ -178,10 +201,13 @@
             <output_collection name="chikr_collection" type="list" count="1"/>
         </test>
         <!-- Series, early stopping -->
-        <test expect_num_outputs="1">
+        <test expect_num_outputs="2">
             <param name="execution" value="series"/>
             <param name="prj_file" value="test.prj,test.prj"/>
-            <param name="r_factor" value="0.01"/>
+            <param name="variable" value="rfactor"/>
+            <param name="action" value="stop"/>
+            <param name="variable" value="alpha"/>
+            <param name="action" value="log"/>
             <param name="feff_paths" value="[FEFF_paths_of_test.inp].zip"/>
             <param name="gds_file" value="gds.csv"/>
             <param name="sp_file" value="sp.csv"/>
@@ -194,12 +220,20 @@
             <param name="rmin" value="1.4"/>
             <param name="rmax" value="3.0"/>
             <output_collection name="fit_report_collection" type="list" count="1"/>
+            <output name="criteria_report" file="criteria_report.csv"/>
         </test>
     </tests>
     <help><![CDATA[
         Using Larch, perform fitting on an Athena project file, originally from the input X-ray Absorption Fine Structure (XAFS) data file.
 
         Optionally, plot the xμ data along with RMR and ChiKR plots for visual inspection of the fit. 
+
+        By default, if multiple files or a collection is provided then these jobs will be executed independently, in parallel.
+        
+        Alternatively, series execution will submit a single job with each file being executed in order as part of the job.
+        Criteria of interest from each individual report can be collected and logged.
+        Additionally, thresholds can be set, with either warnings being printed or the job stopping early if these are exceeded by the criteria of interest.
+        Parameters in both the "Statistics" and "Variables" sections of the report are supported.
     ]]></help>
     <citations>
         <citation type="doi">@TOOL_CITATION@</citation>

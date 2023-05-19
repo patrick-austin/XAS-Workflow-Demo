@@ -1,9 +1,12 @@
 import csv
 import json
+import os
 import sys
 from typing import Iterable
 
 import matplotlib.pyplot as plt
+
+import numpy as np
 
 
 def plot(variable: str, column: Iterable[float]):
@@ -11,7 +14,9 @@ def plot(variable: str, column: Iterable[float]):
     path = f"plots/{variable_stripped}.png"
     plt.figure(figsize=(8, 4))
     plt.plot(column)
-    plt.xticks(range(len(column)))
+    plt.xlim((0, len(column)))
+    ticks, _ = plt.xticks()
+    plt.xticks(np.array(ticks).astype("int"))
     plt.xlabel("Dataset number")
     plt.ylabel(variable_stripped)
     plt.savefig(path, format="png")
@@ -37,7 +42,13 @@ def parse_reports(input_data: str) -> "dict[str, list[float]]":
     with open("criteria_report.csv", "w") as f_out:
         writer = csv.writer(f_out)
         writer.writerow([f"{h:>12s}" for h in headers])
-        for input_file in input_data.split(","):
+
+        if os.path.isdir(input_data):
+            input_files = [os.path.join(input_data, f) for f in os.listdir(input_data)]
+        else:
+            input_files = input_data.split(",")
+
+        for input_file in input_files:
             row = parse_row(data, headers, input_file)
             writer.writerow(row)
 

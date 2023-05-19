@@ -15,13 +15,19 @@
     </creator>
     <requirements>
         <requirement type="package" version="@TOOL_VERSION@">matplotlib</requirement>
+        <requirement type="package" version="3.0">zip</requirement>
     </requirements>
     <required_files>
         <include type="literal" path="larch_criteria_report.py"/>
     </required_files>
     <command detect_errors="exit_code"><![CDATA[
         mkdir plots
-        && python '${__tool_directory__}/larch_criteria_report.py' '$format.input_data' '$inputs'
+        && input_file='$format.input_data'
+        #if $format.format == 'zipped':
+            && unzip \$input_file
+            && input_file=report
+        #end if
+        && python '${__tool_directory__}/larch_criteria_report.py' \$input_file '$inputs'
     ]]></command>
     <configfiles>
         <inputs name="inputs"/>
@@ -31,6 +37,7 @@
             <param name="format" type="select" display="radio" label="Input format" help="Format of input file(s).">
                 <option value="csv" selected="true">Single CSV</option>
                 <option value="collection">Collection of TXT</option>
+                <option value="zipped">Zipped TXT</option>
             </param>
             <when value="csv">
                 <param name="input_data" type="data" format="csv" label="Criteria report" help="Report summarising logged criteria from an execution of Larch Artemis."/>
@@ -41,11 +48,17 @@
                     <param name="variable" type="text" label="Variable" help="Name of the variable of that appears in the statistics or variables sections of the report."/>
                 </repeat>
             </when>
+            <when value="zipped">
+                <param name="input_data" type="data" format="zip" label="Zipped Artemis outputs" help="Zipped fit reports from series executions of Larch Artemis."/>
+                <repeat name="report_criteria" title="Report Criteria">
+                    <param name="variable" type="text" label="Variable" help="Name of the variable of that appears in the statistics or variables sections of the report."/>
+                </repeat>
+            </when>
         </conditional>
     </inputs>
     <outputs>
         <data name="criteria_report" format="csv" from_work_dir="criteria_report.csv" label="Tabulated criteria from ${on_string}">
-            <filter>format["format"]=="collection"</filter>
+            <filter>format["format"]!="csv"</filter>
         </data>
         <collection name="plots" format="png" type="list" label="Plots of criteria from ${on_string}">
             <discover_datasets pattern="__name_and_ext__" directory="plots"/>
@@ -65,12 +78,20 @@
             <output name="criteria_report" file="criteria_report_alpha.csv"/>
             <output_collection name="plots" type="list" count="1"/>
         </test>
+        <!-- From ZIP -->
+        <test expect_num_outputs="2">
+            <param name="format" value="zipped"/>
+            <param name="input_data" value="artemis_outputs.zip"/>
+            <param name="variable" value="alpha"/>
+            <output name="criteria_report" file="criteria_report_zipped.csv"/>
+            <output_collection name="plots" type="list" count="1"/>
+        </test>
     </tests>
     <help><![CDATA[
         Plot criteria of interest from multiple Artemis fittings, for example where each dataset represents a sequential point in time.
 
-        Either accepts a CSV summary from series execution (with criteria already selected) or multiple datasets/a collection of fit reports from parallel execution.
-        In the latter case, the criteria of interest need to be specified.
+        Either accepts a CSV summary from series execution (with criteria already selected), a zipped directory, or multiple datasets/a collection of fit reports from parallel execution.
+        In the latter cases, the criteria of interest need to be specified.
     ]]></help>
     <citations>
         <citation type="doi">@TOOL_CITATION@</citation>

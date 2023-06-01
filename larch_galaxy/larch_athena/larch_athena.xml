@@ -25,11 +25,15 @@
         <include type="literal" path="larch_athena.py"/>
     </required_files>
     <command detect_errors="exit_code"><![CDATA[
-        mkdir prj edge flat
-        #if $dat_file.extension=="zip":
-            && unzip '$dat_file' -d dat_files
+        mkdir prj edge flat derivative
+        #if $merge_inputs.merge_inputs == "":
+            #if $merge_inputs.dat_file.extension=="zip":
+                && unzip '$merge_inputs.dat_file' -d dat_files
+            #end if
+            && python '${__tool_directory__}/larch_athena.py' '$merge_inputs.dat_file' '$merge_inputs.dat_file.extension' '$inputs'
+        #else
+            && python '${__tool_directory__}/larch_athena.py' '$merge_inputs.dat_file' 'NA' '$inputs'
         #end if
-        && python '${__tool_directory__}/larch_athena.py' '$dat_file' '$dat_file.extension' '$inputs'
         #if $zip_outputs:
             && zip out_zip.zip prj/* edge/* flat/*
         #end if
@@ -38,46 +42,70 @@
         <inputs name="inputs"/>
     </configfiles>
     <inputs>
-        <param name="dat_file" type="data" format="zip,h5,txt" label="XAFS data file" help="X-ray Absorption Fine Structure (XAFS) data, either in h5 or plaintext. Accepts individual file(s) or a zip."/>
+        <conditional name="merge_inputs" >
+            <param name="merge_inputs" type="select" display="radio" label="Merge inputs" help="Whether to merge input data into one Athena project, by default each dataset or file in a zip will result in a separate output.">
+                <option value="" selected="true">No</option>
+                <option value="true">Yes</option>
+            </param>
+            <when value="">
+                <param name="dat_file" type="data" format="zip,h5,txt" label="XAFS data file" help="X-ray Absorption Fine Structure (XAFS) data, either in h5 or plaintext. Accepts individual file(s) or a zip."/>
+            </when>
+            <when value="true">
+                <param name="dat_file" type="data" format="zip,h5,txt" multiple="true" label="XAFS data file" help="X-ray Absorption Fine Structure (XAFS) data, either in h5 or plaintext, which will be merged. Accepts individual files or a zip."/>
+            </when>
+        </conditional>
+        <param name="energy_0" type="float" label="Edge energy (eV)" optional="true" help="If set, data will be calibrated so that the edge occurs at this energy (after merging, if relevant)."/>
         <param name="energy_min" type="float" label="Minimum energy (eV)" optional="true" help="If set, data will be cropped below this value in electron volts."/>
         <param name="energy_max" type="float" label="Maximum energy (eV)" optional="true" help="If set, data will be cropped above this value in electron volts."/>
+        <param name="rebin" type="boolean" label="Re-bin data" help="Whether to re-bin along the energy axis to ensure appropriate levels of precision in the pre-edge, near-edge and extended region of the spectrum."/>
         <param name="plot_graph" type="boolean" label="Plot graph" help="Whether to plot the pre/post edge fitting and the normalised xμ data."/>
         <param name="zip_outputs" type="boolean" label="Zip outputs" help="Whether to zip all outputs into one dataset."/>
     </inputs>
     <outputs>
-        <data name="out_zip" format="zip" from_work_dir="out_zip.zip" label="Zipped Athena project(s) of ${dat_file.name}">
+        <data name="out_zip" format="zip" from_work_dir="out_zip.zip" label="Zipped Athena project(s) of ${on_string}">
             <filter>zip_outputs</filter>
         </data>
-        <data name="athena_project_file" format="binary" from_work_dir="prj/prj.binary" label="Athena project of ${dat_file.name}">
-            <filter>dat_file.extension!="zip"</filter>
+        <data name="athena_project_file" format="binary" from_work_dir="prj/prj.binary" label="Athena project of ${on_string}">
             <filter>not zip_outputs</filter>
+            <filter>merge_inputs["merge_inputs"] or merge_inputs["dat_file"].extension != "zip"</filter>
         </data>
-        <data name="edge_plot" format="png" from_work_dir="edge/edge.png" label="Edge fitting of ${dat_file.name}">
-            <filter>dat_file.extension!="zip"</filter>
+        <data name="edge_plot" format="png" from_work_dir="edge/edge.png" label="Edge fitting of ${on_string}">
             <filter>plot_graph</filter>
             <filter>not zip_outputs</filter>
+            <filter>merge_inputs["merge_inputs"] or merge_inputs["dat_file"].extension != "zip"</filter>
         </data>
-        <data name="flat_plot" format="png" from_work_dir="flat/flat.png" label="Flattened plot of ${dat_file.name}">
-            <filter>dat_file.extension!="zip"</filter>
+        <data name="flat_plot" format="png" from_work_dir="flat/flat.png" label="Flattened plot of ${on_string}">
             <filter>plot_graph</filter>
             <filter>not zip_outputs</filter>
+            <filter>merge_inputs["merge_inputs"] or merge_inputs["dat_file"].extension != "zip"</filter>
         </data>
-        <collection name="athena_project_file_collection" format="binary" type="list" label="Athena projects of ${dat_file.name}">
+        <data name="derivative_plot" format="png" from_work_dir="derivative/derivative.png" label="Derivative plot of ${on_string}">
+            <filter>plot_graph</filter>
+            <filter>not zip_outputs</filter>
+            <filter>merge_inputs["merge_inputs"] or merge_inputs["dat_file"].extension != "zip"</filter>
+        </data>
+        <collection name="athena_project_file_collection" format="binary" type="list" label="Athena projects of ${on_string}">
             <discover_datasets pattern="__name_and_ext__" directory="prj"/>
-            <filter>dat_file.extension=="zip"</filter>
             <filter>not zip_outputs</filter>
+            <filter>merge_inputs["merge_inputs"] == "" and merge_inputs["dat_file"].extension == "zip"</filter>
         </collection>
-        <collection name="edge_plot_collection" format="png" type="list" label="Edge fittings of ${dat_file.name}">
+        <collection name="edge_plot_collection" format="png" type="list" label="Edge fittings of ${on_string}">
             <discover_datasets pattern="__name_and_ext__" directory="edge"/>
-            <filter>dat_file.extension=="zip"</filter>
             <filter>plot_graph</filter>
             <filter>not zip_outputs</filter>
+            <filter>merge_inputs["merge_inputs"] == "" and merge_inputs["dat_file"].extension == "zip"</filter>
         </collection>
-        <collection name="flat_plot_collection" format="png" type="list" label="Flattened plots of ${dat_file.name}">
+        <collection name="flat_plot_collection" format="png" type="list" label="Flattened plots of ${on_string}">
             <discover_datasets pattern="__name_and_ext__" directory="flat"/>
-            <filter>dat_file.extension=="zip"</filter>
             <filter>plot_graph</filter>
             <filter>not zip_outputs</filter>
+            <filter>merge_inputs["merge_inputs"] == "" and merge_inputs["dat_file"].extension == "zip"</filter>
+        </collection>
+        <collection name="derivative_plot_collection" format="png" type="list" label="Derivative plots of ${on_string}">
+            <discover_datasets pattern="__name_and_ext__" directory="derivative"/>
+            <filter>plot_graph</filter>
+            <filter>not zip_outputs</filter>
+            <filter>merge_inputs["merge_inputs"] == "" and merge_inputs["dat_file"].extension == "zip"</filter>
         </collection>
     </outputs>
     <tests>
@@ -89,7 +117,7 @@
                 </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="3">
+        <test expect_num_outputs="4">
             <param name="dat_file" value="test.xmu"/>
             <param name="plot_graph" value="true"/>
             <output name="athena_project_file">
@@ -107,13 +135,19 @@
                     <has_size value="39266" delta="20"/>
                 </assert_contents>
             </output>
+            <output name="derivative_plot">
+                <assert_contents>
+                    <has_size value="42435" delta="20"/>
+                </assert_contents>
+            </output>
         </test>
-        <test expect_num_outputs="3">
+        <test expect_num_outputs="4">
             <param name="dat_file" value="test.zip"/>
             <param name="plot_graph" value="true"/>
             <output_collection name="athena_project_file_collection" type="list" count="2"/>
             <output_collection name="edge_plot_collection" type="list" count="2"/>
             <output_collection name="flat_plot_collection" type="list" count="2"/>
+            <output_collection name="derivative_plot_collection" type="list" count="2"/>
         </test>
         <test expect_num_outputs="1">
             <param name="dat_file" value="h5.zip"/>
@@ -130,17 +164,71 @@
             <param name="energy_min" value="7000"/>
             <output name="athena_project_file">
                 <assert_contents>
-                    <has_size value="5298" delta="10"/>
+                    <has_size value="5300" delta="100"/>
+                </assert_contents>
+            </output>
+        </test>
+        <test expect_num_outputs="4">
+            <param name="dat_file" value="test.xmu"/>
+            <param name="energy_min" value="7000"/>
+            <param name="energy_max" value="7100"/>
+            <param name="plot_graph" value="true"/>
+            <output name="athena_project_file">
+                <assert_contents>
+                    <has_size value="2350" delta="50"/>
+                </assert_contents>
+            </output>
+            <output name="edge_plot">
+                <assert_contents>
+                    <has_size value="36640" delta="10"/>
+                </assert_contents>
+            </output>
+            <output name="flat_plot">
+                <assert_contents>
+                    <has_size value="45060" delta="10"/>
+                </assert_contents>
+            </output>
+            <output name="derivative_plot">
+                <assert_contents>
+                    <has_size value="40700" delta="10"/>
                 </assert_contents>
             </output>
         </test>
         <test expect_num_outputs="1">
             <param name="dat_file" value="test.xmu"/>
+            <param name="energy_0" value="7050"/>
             <param name="energy_min" value="7000"/>
             <param name="energy_max" value="7100"/>
             <output name="athena_project_file">
                 <assert_contents>
-                    <has_size value="1427" delta="10"/>
+                    <has_size value="3082" delta="10"/>
+                </assert_contents>
+            </output>
+        </test>
+        <test expect_num_outputs="1">
+            <param name="dat_file" value="test.xmu"/>
+            <param name="rebin" value="true"/>
+            <output name="athena_project_file">
+                <assert_contents>
+                    <has_size value="8413" delta="10"/>
+                </assert_contents>
+            </output>
+        </test>
+        <test expect_num_outputs="1">
+            <param name="merge_inputs" value="true"/>
+            <param name="dat_file" value="262875_PtSn_OCO_Abu_1.nxs,262876_PtSn_OCO_Abu_2.nxs"/>
+            <output name="athena_project_file">
+                <assert_contents>
+                    <has_size value="37546" delta="10"/>
+                </assert_contents>
+            </output>
+        </test>
+        <test expect_num_outputs="1">
+            <param name="merge_inputs" value="true"/>
+            <param name="dat_file" value="test.zip"/>
+            <output name="athena_project_file">
+                <assert_contents>
+                    <has_size value="17989" delta="10"/>
                 </assert_contents>
             </output>
         </test>

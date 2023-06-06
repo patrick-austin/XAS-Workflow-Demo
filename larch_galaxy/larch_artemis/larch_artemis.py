@@ -148,7 +148,7 @@ def read_selected_paths_list(file_name):
     sp_list = []
     for path_id in sp_dict:
         new_path = FeffPathGroup(
-            filename="feff/" + sp_dict[path_id]["filename"],
+            filename=sp_dict[path_id]["filename"],
             label=sp_dict[path_id]["label"],
             s02=sp_dict[path_id]["s02"],
             e0=sp_dict[path_id]["e0"],

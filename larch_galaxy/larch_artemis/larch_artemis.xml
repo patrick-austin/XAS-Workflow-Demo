@@ -67,10 +67,10 @@
                 <option value="zipped">Zipped</option>
             </param>
             <when value="parallel">
-                <param name="prj_file" type="data" format="binary" label="Athena project file" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format. If a collection of files is provided, these will be submitted and executed in parallel."/>
+                <param name="prj_file" type="data" format="prj" label="Athena project file" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format. If a collection of files is provided, these will be submitted and executed in parallel."/>
             </when>
             <when value="series">
-                <param name="prj_file" type="data" format="binary" multiple="true" label="Athena project files" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format. These will be submitted as a single job working in series, enabling early stopping criteria."/>
+                <param name="prj_file" type="data" format="prj" multiple="true" label="Athena project files" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format. These will be submitted as a single job working in series, enabling early stopping criteria."/>
                 <expand macro="series_options"/>
             </when>
             <when value="zipped">
@@ -79,8 +79,8 @@
             </when>
         </conditional>
         <param name="feff_paths" type="data" format="zip" label="FEFF paths file" help="Zipped directory of the FEFF paths."/>
-        <param name="gds_file" type="data" format="csv" label="GDS parameters file" help="File defining the fitting parameters as a `guess` (to be varied in the fit), `def` (defined by an expression evaluated throughout fitting) or `set` (evaluated at the start of fitting, then left unchanged)."/>
-        <param name="sp_file" type="data" format="csv" label="SP parameters file" help="File defining the scattering paths."/>
+        <param name="gds_file" type="data" format="gds" label="GDS parameters file" help="File defining the fitting parameters as a `guess` (to be varied in the fit), `def` (defined by an expression evaluated throughout fitting) or `set` (evaluated at the start of fitting, then left unchanged)."/>
+        <param name="sp_file" type="data" format="sp" label="SP parameters file" help="File defining the scattering paths."/>
         <section name="fit_vars" title="Fitting Variables">
             <param argument="fitspace" type="select" help="Space in which the fitting is performed.">
                 <option value="r" selected="true">Real</option>
@@ -110,7 +110,7 @@
         <data name="out_zip" format="zip" from_work_dir="out_zip.zip" label="Zipped Artemis outputs on ${on_string}">
             <filter>zip_outputs</filter>
         </data>
-        <data name="fit_report" format="txt" from_work_dir="report/fit_report.txt" label="Fit report on ${on_string}">
+        <data name="fit_report" format="feffit" from_work_dir="report/fit_report.txt" label="Fit report on ${on_string}">
             <filter>execution["execution"]=="parallel"</filter>
             <filter>not zip_outputs</filter>
         </data>
@@ -124,7 +124,7 @@
             <filter>plot_graph</filter>
             <filter>not zip_outputs</filter>
         </data>
-        <collection name="fit_report_collection" format="txt" type="list" label="Fit reports on ${on_string}">
+        <collection name="fit_report_collection" format="feffit" type="list" label="Fit reports on ${on_string}">
             <discover_datasets pattern="__name_and_ext__" directory="report"/>
             <filter>execution["execution"]!="parallel"</filter>
             <filter>not zip_outputs</filter>

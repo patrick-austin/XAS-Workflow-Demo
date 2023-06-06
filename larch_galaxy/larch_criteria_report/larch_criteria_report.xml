@@ -36,14 +36,14 @@
         <conditional name="format" >
             <param name="format" type="select" display="radio" label="Input format" help="Format of input file(s).">
                 <option value="csv" selected="true">Single CSV</option>
-                <option value="collection">Collection of TXT</option>
-                <option value="zipped">Zipped TXT</option>
+                <option value="collection">Multiple FEFFIT reports</option>
+                <option value="zipped">Zipped FEFFIT reports</option>
             </param>
             <when value="csv">
                 <param name="input_data" type="data" format="csv" label="Criteria report" help="Report summarising logged criteria from an execution of Larch Artemis."/>
             </when>
             <when value="collection">
-                <param name="input_data" type="data" format="txt" multiple="true" label="Fit reports" help="Individual fit reports from independent executions of Larch Artemis."/>
+                <param name="input_data" type="data" format="feffit" multiple="true" label="Fit reports" help="Individual fit reports from independent executions of Larch Artemis."/>
                 <repeat name="report_criteria" title="Report Criteria">
                     <param name="variable" type="text" label="Variable" help="Name of the variable of that appears in the statistics or variables sections of the report."/>
                 </repeat>

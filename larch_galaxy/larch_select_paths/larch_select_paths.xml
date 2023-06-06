@@ -24,26 +24,30 @@
         <include type="literal" path="larch_select_paths.py"/>
     </required_files>
     <command detect_errors="exit_code"><![CDATA[
-        python '${__tool_directory__}/larch_select_paths.py' '$paths_file' '$inputs'
+        python '${__tool_directory__}/larch_select_paths.py' '$inputs'
     ]]></command>
     <configfiles>
-        <inputs name="inputs"/>
+        <inputs name="inputs" data_style="paths"/>
     </configfiles>
     <inputs>
-        <param name="paths_file" type="data" format="csv" label="Paths file" help="CSV file detailing the possible scattering paths. Note that rows with '1' in the 'select' column will be selected with default values for their parameters automatically."/>
-        <param name="select_all" type="boolean" checked="true" label="Select all" help="All paths will be selected, with default values used unless specified manually below."/>
-        <repeat name="paths" title="Select paths" help="Identify paths to use in the fitting by their id, and define their fitting parameter names. Defaults can be used, but if custom values are needed define a new name and create an entry in Custom GDS variables.">
-            <param name="id" type="integer" value="1" min="1" label="Path ID" help="Numerical id of a path to select, this appears at the end of the label and filename in the path summary CSV."/>
-            <param name="s02" type="text" value="amp" label="s02" help="The varaible name for the amplitude 's0 squared' (passive electron reduction factor) as it appears in the EXAFS equation. Default is 'amp'."/>
-            <param name="e0" type="text" value="enot" label="e0" help="The varaible name for the energy 'e0' (position of the absorption edge) as it appears in the EXAFS equation. Default is 'enot'."/>
-            <param name="sigma2" type="text" optional="true" label="sigma2" help="The variable name for 'sigma squared' (mean-square disorder in distance) as it appears in the EXAFS equation. By default (if left unset), each path will have a unique 'Custom GDS variable' 'name' with default 'value', 'expr' and 'vary' settings."/>
-            <param name="deltar" type="text" value="alpha*reff" label="deltar" help="The varaible name for 'delta r' (change in scattering path distance) as it appears in the EXAFS equation. Default is 'alpha*reff', where 'reff' is the path length used in the FEFF calculation."/>
-        </repeat>
-        <repeat name="gds" title="Custom GDS variables" help="Guess, Set, Define (GDS) variables for the selected paths.">
-            <param name="name" type="text" label="Name" help="The name of the variable should match what is used in the Select paths section"/>
-            <param name="value" type="float" value="0.003" label="Value" help="The initial value for the variable."/>
-            <param name="expr" type="text" optional="true" label="Expression" help="If set, the variable will be 'Defined' by the expression. This can include other variable name, for example in order to set two paths to use the same variable."/>
-            <param name="vary" type="boolean" checked="true" label="Vary" help="If True, the initial 'Guess' will be optimised in the fitting. If False, the value will be 'Set' instead and not optimised."/>
+        <repeat name="feff_outputs" title="Distinct FEFF outputs" min="1" help="If FEFF has been used on multiple structures, the paths from each can be merged into one input to provide to Larch Artemis. If only one entry is provided, then the zipped directory of paths will be unchanged.">
+            <param name="paths_zip" type="data" format="zip" label="Zipped paths directory" help="Zipped directory containing the actual path files output by FEFF."/>
+            <param name="paths_file" type="data" format="feff" label="Paths file" help="CSV file detailing the possible scattering paths. Note that rows with '1' in the 'select' column will be selected with default values for their parameters automatically."/>
+            <param name="label" type="text" optional="true" label="Label" help="Short label to use when merging different FEFF outputs to ensure they remain distinct. Not required if only providing a single output, and will default to the index in this list."/>
+            <param name="select_all" type="boolean" checked="true" label="Select all" help="All paths will be selected, with default values used unless specified manually below."/>
+            <repeat name="paths" title="Select paths" help="Identify paths to use in the fitting by their id, and define their fitting parameter names. Defaults can be used, but if custom values are needed define a new name and create an entry in Custom GDS variables.">
+                <param name="id" type="integer" value="1" min="1" label="Path ID" help="Numerical id of a path to select, this appears at the end of the label and filename in the path summary CSV."/>
+                <param name="s02" type="text" value="amp" label="s02" help="The varaible name for the amplitude 's0 squared' (passive electron reduction factor) as it appears in the EXAFS equation. Default is 'amp'."/>
+                <param name="e0" type="text" value="enot" label="e0" help="The varaible name for the energy 'e0' (position of the absorption edge) as it appears in the EXAFS equation. Default is 'enot'."/>
+                <param name="sigma2" type="text" optional="true" label="sigma2" help="The variable name for 'sigma squared' (mean-square disorder in distance) as it appears in the EXAFS equation. By default (if left unset), each path will have a unique 'Custom GDS variable' 'name' with default 'value', 'expr' and 'vary' settings."/>
+                <param name="deltar" type="text" value="alpha*reff" label="deltar" help="The varaible name for 'delta r' (change in scattering path distance) as it appears in the EXAFS equation. Default is 'alpha*reff', where 'reff' is the path length used in the FEFF calculation."/>
+            </repeat>
+            <repeat name="gds" title="Custom GDS variables" help="Guess, Set, Define (GDS) variables for the selected paths.">
+                <param name="name" type="text" label="Name" help="The name of the variable should match what is used in the Select paths section"/>
+                <param name="value" type="float" value="0.003" label="Value" help="The initial value for the variable."/>
+                <param name="expr" type="text" optional="true" label="Expression" help="If set, the variable will be 'Defined' by the expression. This can include other variable name, for example in order to set two paths to use the same variable."/>
+                <param name="vary" type="boolean" checked="true" label="Vary" help="If True, the initial 'Guess' will be optimised in the fitting. If False, the value will be 'Set' instead and not optimised."/>
+            </repeat>
         </repeat>
         <section name="amp" title="GDS default (amp)" help="Default value used for the 's02' variable 'amp' for all paths. Changing this will affect all paths without a custom variable defined for 's02'.">
             <param name="value" type="float" value="1.0" min="0.0" max="1.0" label="Value" help="The initial value for the variable. This is typically between 0.7 and 1.0."/>
@@ -62,18 +66,23 @@
         </section>
     </inputs>
     <outputs>
-        <data name="gds_csv" format="csv" from_work_dir="gds.csv" label="GDS values of ${paths_file.name}"/>
-        <data name="sp_csv" format="csv" from_work_dir="sp.csv" label="Selected paths of ${paths_file.name}"/>
+        <data name="merged_directories" format="zip" from_work_dir="merged.zip" label="Merged directories from ${on_string}">
+            <filter>len(feff_outputs) > 1</filter>
+        </data>
+        <data name="gds_csv" format="gds" from_work_dir="gds.csv" label="GDS values for ${on_string}"/>
+        <data name="sp_csv" format="sp" from_work_dir="sp.csv" label="Selected paths for ${on_string}"/>
     </outputs>
     <tests>
         <!-- Test defaults for CSV with select_all -->
         <test expect_num_outputs="2">
+            <param name="paths_zip" value="FEFF_paths.zip"/>
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
             <output name="gds_csv" file="gds_default.csv"/>
             <output name="sp_csv" file="sp_default.csv"/>
         </test>
         <!-- Test defaults for CSV with some selected rows -->
         <test expect_num_outputs="2">
+            <param name="paths_zip" value="FEFF_paths.zip"/>
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
             <param name="select_all" value="false"/>
             <output name="gds_csv" file="gds_select_all_false.csv"/>
@@ -81,6 +90,7 @@
         </test>
         <!-- Test selected paths without custom GDS -->
         <test expect_num_outputs="2">
+            <param name="paths_zip" value="FEFF_paths.zip"/>
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
             <param name="select_all" value="false"/>
             <param name="id" value="3"/>
@@ -89,6 +99,7 @@
         </test>
         <!-- Test selected paths with custom name but no GDS entry -->
         <test expect_num_outputs="2">
+            <param name="paths_zip" value="FEFF_paths.zip"/>
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
             <param name="select_all" value="false"/>
             <param name="id" value="3"/>
@@ -98,6 +109,7 @@
         </test>
         <!-- Test selected paths with custom GDS -->
         <test expect_num_outputs="2">
+            <param name="paths_zip" value="FEFF_paths.zip"/>
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
             <param name="select_all" value="false"/>
             <param name="id" value="3"/>
@@ -111,6 +123,7 @@
         </test>
         <!-- Test changing default GDS values -->
         <test expect_num_outputs="2">
+            <param name="paths_zip" value="FEFF_paths.zip"/>
             <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
             <param name="select_all" value="false"/>
             <section name="amp">
@@ -131,9 +144,63 @@
             <output name="gds_csv" file="gds_altered_defaults.csv"/>
             <output name="sp_csv" file="sp_select_all_false.csv"/>
         </test>
+        <!-- Test merging defaults -->
+        <test expect_num_outputs="3">
+            <repeat name="feff_outputs">
+                <param name="paths_zip" value="FEFF_paths.zip"/>
+                <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            </repeat>
+            <repeat name="feff_outputs">
+                <param name="paths_zip" value="FEFF_paths.zip"/>
+                <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+            </repeat>
+            <output name="merged_directories">
+                <assert_contents>
+                    <has_size value="206000" delta="100"/>
+                </assert_contents>
+            </output>
+            <output name="gds_csv" file="gds_merge_default.csv"/>
+            <output name="sp_csv" file="sp_merge_default.csv"/>
+        </test>
+        <!-- Test merging custom arguments -->
+        <test expect_num_outputs="3">
+            <repeat name="feff_outputs">
+                <param name="label" value="primary"/>
+                <param name="paths_zip" value="FEFF_paths.zip"/>
+                <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+                <param name="select_all" value="false"/>
+                <repeat name="paths">
+                    <param name="id" value="3"/>
+                    <param name="sigma2" value="custom_name_1"/>
+                </repeat>
+            </repeat>
+            <repeat name="feff_outputs">
+                <param name="label" value="secondary"/>
+                <param name="paths_zip" value="FEFF_paths.zip"/>
+                <param name="paths_file" value="[CSV_summary_of_1564889.cif].csv"/>
+                <param name="select_all" value="false"/>
+                <repeat name="paths">
+                    <param name="id" value="3"/>
+                    <param name="sigma2" value="custom_name_2"/>
+                </repeat>
+            </repeat>
+            <output name="merged_directories">
+                <assert_contents>
+                    <has_size value="206500" delta="100"/>
+                </assert_contents>
+            </output>
+            <output name="gds_csv" file="gds_merge_custom.csv"/>
+            <output name="sp_csv" file="sp_merge_custom.csv"/>
+        </test>
     </tests>
     <help><![CDATA[
         Select FEFF scattering paths to use in the fitting process.
+
+        If paths from multiple different FEFF outputs are of interest (for example, corresponding to different structural files), then additional FEFF outputs can be added.
+        Each requires its own zip directory and path summary CSV, and any custom GDS parameters will be uniquely labelled with the label provided or a numerical default.
+        In this case the zipped directories will also be merged into one output containing all paths and associated files.
+
+        If only one set of FEFF outputs is provided, labelling is not required and the existing zip file can be used as the input to Larch Artemis.
 
         If "Select all" is checked, or an individual row in the CSV with ``select`` is set to ``1``, it will be automatically used, with the default values shown here.
         This can be useful when many paths are needed and using the UI can be cumbersome.

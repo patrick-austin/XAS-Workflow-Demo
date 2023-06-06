@@ -31,10 +31,10 @@
     </configfiles>
     <inputs>
         <param name="label" type="text" optional="true" label="Main data label" help="The label to use for the main data (target of the fit). If unset, the label will be taken from the Athena project metadata."/>
-        <param name="prj_file" type="data" format="binary" label="Athena project to fit" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format, to be fit."/>
+        <param name="prj_file" type="data" format="prj" label="Athena project to fit" help="Normalised X-ray Absorption Fine Structure (XAFS) data, in Athena project format, to be fit."/>
         <repeat name="components" title="Fit components">
             <param name="label" type="text" optional="true" label="Component label" help="The label to use for this component. If unset, the label will be taken from the Athena project metadata."/>
-            <param name="component_file" type="data" format="binary" label="Athena project to fit" help="Reference X-ray Absorption Fine Structure (XAFS) data, in Athena project format, to be used as components in the fit."/>
+            <param name="component_file" type="data" format="prj" label="Athena project to fit" help="Reference X-ray Absorption Fine Structure (XAFS) data, in Athena project format, to be used as components in the fit."/>
             <param name="extract_group" type="text" optional="true" label="Extract group" help="Extract a Group nested within the project to use for the LCF. This Group should have the 'norm' attribute. If unset, the first Athena Group will be used."/>
         </repeat>
     </inputs>

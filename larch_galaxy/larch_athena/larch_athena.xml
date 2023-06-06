@@ -65,7 +65,7 @@
         <data name="out_zip" format="zip" from_work_dir="out_zip.zip" label="Zipped Athena project(s) of ${on_string}">
             <filter>zip_outputs</filter>
         </data>
-        <data name="athena_project_file" format="binary" from_work_dir="prj/prj.binary" label="Athena project of ${on_string}">
+        <data name="athena_project_file" format="prj" from_work_dir="prj/athena.prj" label="Athena project of ${on_string}">
             <filter>not zip_outputs</filter>
             <filter>merge_inputs["merge_inputs"] or merge_inputs["dat_file"].extension != "zip"</filter>
         </data>
@@ -84,7 +84,7 @@
             <filter>not zip_outputs</filter>
             <filter>merge_inputs["merge_inputs"] or merge_inputs["dat_file"].extension != "zip"</filter>
         </data>
-        <collection name="athena_project_file_collection" format="binary" type="list" label="Athena projects of ${on_string}">
+        <collection name="athena_project_file_collection" format="prj" type="list" label="Athena projects of ${on_string}">
             <discover_datasets pattern="__name_and_ext__" directory="prj"/>
             <filter>not zip_outputs</filter>
             <filter>merge_inputs["merge_inputs"] == "" and merge_inputs["dat_file"].extension == "zip"</filter>
